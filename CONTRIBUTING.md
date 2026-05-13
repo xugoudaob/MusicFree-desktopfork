@@ -1,7 +1,7 @@
 # 贡献指南 | Contributing Guide
 
 感谢你有兴趣为 MusicFree 贡献代码！以下是参与贡献的流程和规范。
-
+（这个贡献指南好像经过AI改过了，哎，AI工作流。。。）
 Thank you for your interest in contributing to MusicFree! Below are the guidelines and workflow for contributing.
 
 ---
