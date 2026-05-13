@@ -1,4 +1,5 @@
 # MusicFree 桌面版（fork）
+**[English](./README_EN.md)** | 简体中文
 
 [原版：](https://github.com/maotoumao/MusicFree)https://github.com/maotoumao/MusicFree
 
@@ -14,13 +15,14 @@
 <a href="https://trendshift.io/repositories/3961" target="_blank"><img src="https://trendshift.io/api/badge/repositories/3961" alt="maotoumao%2FMusicFreeDesktop | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 ---
 
-## 项目使用约定：
-本项目基于 AGPL 3.0 协议开源，使用此项目时请遵守开源协议。
-除此外，希望你在使用代码时已经了解以下额外说明：
-
-1. 打包、二次分发 **请保留代码出处**：https://github.com/maotoumao/MusicFree，https://github.com/xugoudaob/MusicFree-desktopfork
-2. 请不要用于商业用途，合法合规使用代码；
-3. 如果开源协议变更，将在上游 Github 仓库更新，不另行通知。
+> [!IMPORTANT]
+> **项目使用约定**
+>
+> 本项目基于 [AGPL 3.0](./LICENSE) 协议开源，使用此项目时请遵守开源协议。
+> 此外，希望你在使用代码时已了解以下额外说明：
+> 1. 打包、二次分发**请保留代码出处**：https://github.com/maotoumao/MusicFree https://github.com/xugoudaob/MusicFree-desktopfork
+> 2. 请不要用于商业用途，合法合规使用代码；
+> 3.如果开源协议变更，将在上游 Github 仓库更新，不另行通知。
 ---
 
 ## 原readme以外的另行说明
@@ -32,13 +34,36 @@
 
 ## 启动项目
 
-下载仓库代码和**nodejs**(至少大于v18)之后，在根目录下执行：
+**nodejs**(至少大于v18)之后，在根目录下执行：
 （另：写的是bash代码，实际上nodejs安装好了后cmd也能用，mac terminal未知）
 
 ```bash
-npm install
-npm start
+# 克隆仓库
+git clone https://github.com/maotoumao/MusicFreeDesktop.git
+cd MusicFreeDesktop
+
+#若无pnpm可选
+#npm -g install pnpm
+
+# 安装依赖
+pnpm install
+
+# 启动应用
+pnpm start
+
+# 开发模式（启用 Electron DevTools）
+pnpm run dev
 ```
+### 常用命令
+
+| 命令 | 说明 |
+| :---------------: | ---------- |
+| `pnpm start` | 启动应用 |
+| `pnpm run dev` | 开发模式 |
+| `pnpm run make` | 构建安装包 |
+| `pnpm run lint` | 代码检查 |
+| `pnpm run format` | 代码格式化 |
+
 
 ## 简介
 
@@ -64,6 +89,7 @@ npm start
 ## 插件
 
 插件协议和安卓版完全相同。
+**插件支持的功能**：搜索（音乐、专辑、作者、歌单）、播放、查看专辑、查看作者详情、导入单曲、导入歌单、获取歌词、排行榜、推荐歌单、歌曲评论、多音质切换（标准 / 高品 / 超品 / 无损）。
 
 [示例插件仓库](https://github.com/maotoumao/MusicFreePlugins)，你可以根据[插件开发文档](https://musicfree.catcat.work/plugin/introduction.html) 开发适配于任意音源的插件。
 
@@ -132,32 +158,12 @@ config.json 是一个配置文件。
 
 示例仓库：https://github.com/maotoumao/MusicFreeThemePacks
 
-几个主题包效果截图：
-
-#### 暗黑模式
-[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/darkmode)
-
-![暗黑模式](./.imgs/darkmode.png)
-
-#### 背景图片
-[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/night-star)
-
-![背景图片](./.imgs/night-star.png)
-
-#### fliqlo
-[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/fliqlo)
-
-![fliqlo](./.imgs/fliqlo.gif)
-
-#### 樱花
-[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/sakura)
-
-![樱花](./.imgs/sakura.gif)
-
-#### 雨季
-[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/rainy-season)
-
-![雨季](./.imgs/rainy-season.gif)
+几个主题包(截图文件没了，没办法)：
+暗黑模式[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/darkmode)
+背景图片[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/night-star)
+fliqlo[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/fliqlo)
+樱花[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/sakura)
+雨季[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/rainy-season)
 
 
 ## 支持这个项目
@@ -169,62 +175,51 @@ config.json 是一个配置文件。
 
 <img src="./src/assets/imgs/wechat_channel.jpg" height="160px" title="原作者的微信公众号" style="display:inherit;"/>
 
-## 截图
+## 🤝 参与贡献
 
-![screenshot](./.imgs/screenshot.png)
+欢迎参与贡献！请阅读 [贡献指南](./CONTRIBUTING.md) 了解开发规范与提交流程。
 
-![screenshot](./.imgs/screenshot1.png)
+## 📸 截图
 
-![screenshot](./.imgs/screenshot2.png)
----
+#### 主页
+
+![主页](./.imgs/screenshot-home.png)
+
+#### 搜索
+
+![搜索](./.imgs/screenshot-search.png)
+
+#### 插件管理
+
+![插件管理](./.imgs/screenshot-plugin.png)
+
+#### 主题广场
+
+![主题](./.imgs/screenshot-theme.png)
+
+#### 设置
+
+![设置](./.imgs/screenshot-settings.png)
+
+#### 迷你模式
+
 <div align="center">
 
+![迷你模式](./.imgs/screenshot-minimode.png)
 
 
-<a href="https://trendshift.io/repositories/3961" target="_blank"><img src="https://trendshift.io/api/badge/repositories/3961" alt="maotoumao%2FMusicFreeDesktop | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-**[English](./README_EN.md)** | 简体中文
+
 
 </div>
 
----
 
-> [!IMPORTANT]
-> **项目使用约定**
->
-> 本项目基于 [AGPL 3.0](./LICENSE) 协议开源，使用此项目时请遵守开源协议。此外，希望你在使用代码时已了解以下额外说明：
->
-> 1. 打包、二次分发**请保留代码出处**：https://github.com/maotoumao/MusicFree
-> 2. 请不要用于商业用途，合法合规使用代码
-> 3. 如果开源协议变更，将在此 GitHub 仓库更新，不另行通知
+
+
 
 ---
-
-## ✨ 简介
-
-一个插件化、定制化、无广告的免费音乐播放器，支持 **Windows**、**macOS** 和 **Linux**。
-
-<img src="./src/assets/imgs/wechat_channel1.png" height="144px" title="微信公众号" />
-
-### 📥 下载
-
-👉 [飞书云文档](https://r0rvr854dd1.feishu.cn/drive/folder/IrVEfD67KlWZGkdqwjecLHFNnBb?from=from_copylink)
-
+>下面的摘自上游代码的dev,我实在是塞不进上面的README了，就放着吧，以后再来看看能不能塞上去
 ---
-
-## 🚀 特性
-
-| 特性 | 说明 |
-| :-----------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **🔌 插件化** | 本软件仅仅是一个播放器，本身**不集成**任何平台的任何音源。所有搜索、播放、歌单导入等功能全部基于**插件**——只要互联网上有对应音源的插件，你都可以用本软件进行搜索和播放。 |
-| **🎨 定制化** | 通过主题包自定义软件外观与背景，支持全新的语义化 CSS 变量系统和 iframe 背景。详见下方 [主题包](#-主题包) 章节。 |
-| **🚫 无广告** | 基于 AGPL 3.0 协议开源，将会保持免费。 |
-| **🔒 隐私** | 所有数据存储在本地，不会上传你的个人信息。 |
-
-**插件支持的功能**：搜索（音乐、专辑、作者、歌单）、播放、查看专辑、查看作者详情、导入单曲、导入歌单、获取歌词、排行榜、推荐歌单、歌曲评论、多音质切换（标准 / 高品 / 超品 / 无损）。
-
----
-
 ## 🔌 插件
 
 MusicFree 的核心能力由插件驱动。插件协议与 [安卓版](https://github.com/maotoumao/MusicFree) 保持兼容，桌面版在此基础上扩展了更多能力。
@@ -309,93 +304,3 @@ my-theme/
 
 通过 `config.json` 中的 `iframe.app` 字段，你可以将任意 HTML 页面设为软件背景，实现粒子、动画等纯 CSS 无法实现的效果。支持本地 HTML 文件和远程 URL。
 
-### 主题包示例
-
-示例仓库：https://github.com/maotoumao/MusicFreeThemePacks
-
----
-
-## 🛠️ 启动项目
-
-### 环境要求
-
-| 依赖 | 版本 |
-| :-----: | :----: |
-| Node.js | >= 18 |
-| pnpm | latest |
-
-### 快速开始
-
-```bash
-# 克隆仓库
-git clone https://github.com/maotoumao/MusicFreeDesktop.git
-cd MusicFreeDesktop
-
-# 安装依赖
-pnpm install
-
-# 启动应用
-pnpm start
-
-# 开发模式（启用 Electron DevTools）
-pnpm run dev
-```
-
-### 常用命令
-
-| 命令 | 说明 |
-| :---------------: | ---------- |
-| `pnpm start` | 启动应用 |
-| `pnpm run dev` | 开发模式 |
-| `pnpm run make` | 构建安装包 |
-| `pnpm run lint` | 代码检查 |
-| `pnpm run format` | 代码格式化 |
-
----
-
-## 🤝 参与贡献
-
-欢迎参与贡献！请阅读 [贡献指南](./CONTRIBUTING.md) 了解开发规范与提交流程。
-
----
-
-## � 支持这个项目
-
-如果你喜欢这个项目，或者希望我可以持续维护下去，你可以通过以下方式支持：
-
-1. ⭐ Star 这个项目，分享给你身边的人
-2. 关注公众号【一只猫头猫】获取最新信息
-
-<img src="./src/assets/imgs/wechat_channel.jpg" height="160px" title="微信公众号" />
-
----
-
-## 📸 截图
-
-#### 主页
-
-![主页](./.imgs/screenshot-home.png)
-
-#### 搜索
-
-![搜索](./.imgs/screenshot-search.png)
-
-#### 插件管理
-
-![插件管理](./.imgs/screenshot-plugin.png)
-
-#### 主题广场
-
-![主题](./.imgs/screenshot-theme.png)
-
-#### 设置
-
-![设置](./.imgs/screenshot-settings.png)
-
-#### 迷你模式
-
-<div align="center">
-
-![迷你模式](./.imgs/screenshot-minimode.png)
-
-</div>
