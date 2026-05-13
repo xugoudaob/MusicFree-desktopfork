@@ -173,8 +173,8 @@ class WebAudioController extends EventEmitter<IAudioControllerEvents> implements
         this._isFadingOut = true;
         this._baseVolume = this.audio.volume;
 
-        const fadeSteps = 12;       // 12 步 ≈ 300ms
-        const fadeInterval = 25;    // 每步 25ms
+        const fadeSteps = 12; // 12 步 ≈ 300ms
+        const fadeInterval = 25; // 每步 25ms
         const startVolume = this.audio.volume;
         const step = startVolume / fadeSteps;
         let stepCount = 0;
@@ -187,7 +187,7 @@ class WebAudioController extends EventEmitter<IAudioControllerEvents> implements
                 this.audio.pause();
                 this.audio.volume = this._baseVolume; // 恢复音量
                 this._isFadingOut = false;
-                this._fadeTimer && clearInterval(this._fadeTimer);
+                if (this._fadeTimer) clearInterval(this._fadeTimer);
                 this._fadeTimer = null;
             } else {
                 this.audio.volume = Math.max(0, startVolume - step * stepCount);

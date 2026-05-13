@@ -47,9 +47,7 @@ export function useProgressDrag(progress: ProgressData) {
         }, 200);
     }, []);
 
-    const displayTime = isDragging
-        ? (dragValue / 100) * progress.duration
-        : progress.currentTime;
+    const displayTime = isDragging ? (dragValue / 100) * progress.duration : progress.currentTime;
 
     return {
         displayValue,

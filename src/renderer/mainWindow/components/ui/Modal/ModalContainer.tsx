@@ -21,13 +21,7 @@ export function ModalContainer() {
 
 // ── 单个弹窗渲染 ────────────────────────────────────────────
 
-function ModalRenderer({
-    name,
-    props,
-}: {
-    name: string;
-    props: Record<string, any>;
-}) {
+function ModalRenderer({ name, props }: { name: string; props: Record<string, any> }) {
     const Component = getModalComponent(name);
 
     const close = useCallback(() => {

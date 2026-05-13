@@ -67,7 +67,8 @@ class ThemePackRenderer {
         await mod.selectTheme(themePack);
         defaultStore.set(currentThemePackAtom, themePack);
         // 同步 color-scheme，使 CSS light-dark() 兜底生效
-        const isLight = !themePack || /light/i.test(themePack.name) || /light/i.test(themePack.path);
+        const isLight =
+            !themePack || /light/i.test(themePack.name) || /light/i.test(themePack.path);
         document.documentElement.style.colorScheme = isLight ? 'light' : 'dark';
     }
 

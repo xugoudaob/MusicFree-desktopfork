@@ -1,9 +1,5 @@
 import { useAtomValue } from 'jotai/react';
-import {
-    contextMenuAtom,
-    getContextMenuTemplate,
-    closeContextMenu,
-} from './contextMenuManager';
+import { contextMenuAtom, getContextMenuTemplate, closeContextMenu } from './contextMenuManager';
 import { ContextMenu } from './index';
 
 /**
@@ -34,11 +30,6 @@ export function ContextMenuContainer() {
     const items = template(state.context);
 
     return (
-        <ContextMenu
-            visible
-            position={state.position}
-            items={items}
-            onClose={closeContextMenu}
-        />
+        <ContextMenu visible position={state.position} items={items} onClose={closeContextMenu} />
     );
 }

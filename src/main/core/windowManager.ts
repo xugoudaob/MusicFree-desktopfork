@@ -416,7 +416,9 @@ class WindowManager implements IWindowManager {
         });
 
         // before-quit 只注册一次，用模块级标记
-        const beforeQuitHandler = () => { isQuitting = true; };
+        const beforeQuitHandler = () => {
+            isQuitting = true;
+        };
         app.on('before-quit', beforeQuitHandler);
 
         // 关闭行为: 最小化到托盘（仅非主动退出时生效）
@@ -618,7 +620,11 @@ class WindowManager implements IWindowManager {
 
             // 恢复保存过的位置，或居中
             const savedPosition = appConfig.getConfigByKey('private.minimodeWindowPosition');
-            if (savedPosition && typeof savedPosition.x === 'number' && typeof savedPosition.y === 'number') {
+            if (
+                savedPosition &&
+                typeof savedPosition.x === 'number' &&
+                typeof savedPosition.y === 'number'
+            ) {
                 const displays = screen.getAllDisplays();
                 const isVisible = displays.some((d) => {
                     const { x: dx, y: dy, width: dw, height: dh } = d.workArea;

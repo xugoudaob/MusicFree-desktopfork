@@ -299,9 +299,13 @@ function whenParentReady(
  * 超出 0.5 视为浅色背景，否则视为深色背景。
  */
 function getBgLuminance(): number {
-    const bg = getComputedStyle(document.documentElement).getPropertyValue('--color-bg-base').trim();
+    const bg = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-bg-base')
+        .trim();
     // 支持 rgb(r, g, b)、rgba(r, g, b, a)、#hex 格式
-    let r = 0, g = 0, b = 0;
+    let r = 0,
+        g = 0,
+        b = 0;
 
     const rgbMatch = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
     if (rgbMatch) {

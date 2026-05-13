@@ -35,9 +35,13 @@ export default function StarredSheetNavItem({
     const handleContextMenu = useCallback(
         (e: MouseEvent) => {
             e.preventDefault();
-            showContextMenu('StarredSheetMenu', { x: e.clientX, y: e.clientY }, {
-                sheetItem: { platform: item.platform, id: item.id },
-            });
+            showContextMenu(
+                'StarredSheetMenu',
+                { x: e.clientX, y: e.clientY },
+                {
+                    sheetItem: { platform: item.platform, id: item.id },
+                },
+            );
         },
         [item.platform, item.id],
     );
