@@ -1,0 +1,10 @@
+allowBuilds:
+    '@bitdisaster/exe-icon-extractor': true
+    '@parcel/watcher': true
+    better-sqlite3: true
+    electron: true
+    electron-winstaller: true
+    sharp: true
+    unrs-resolver: true
+
+nodeLinker: hoisted
