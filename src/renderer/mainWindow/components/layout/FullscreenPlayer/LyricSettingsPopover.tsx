@@ -5,7 +5,7 @@
 // 绝对定位气泡，包含字号调节、翻译开关、下载歌词、搜索替换歌词等功能。
 
 import { useCallback, useRef, useEffect, useState, memo, type RefObject } from 'react';
-import { Download, Search, Unlink } from 'lucide-react';
+import { Download, Search, Unlink, FileUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../ui/Button';
 import {
@@ -19,6 +19,7 @@ import { showToast } from '../../ui/Toast';
 import systemUtil from '@infra/systemUtil/renderer';
 import fsUtil from '@infra/fsUtil/renderer';
 import mediaMeta from '@infra/mediaMeta/renderer';
+import LyricParser from '@common/lyricParser';
 
 interface LyricSettingsPopoverProps {
     /** 是否打开 */
@@ -144,6 +145,56 @@ export default memo(function LyricSettingsPopover({
         showModal('SearchLyricModal');
     }, [onClose]);
 
+    /** 从本地文件导入 lrc 歌词 */
+    const handleImportLrc = useCallback(async () => {
+        const musicItem = lyricState?.parser?.musicItem;
+        if (!musicItem) return;
+
+        const result = await systemUtil.showOpenDialog({
+            title: t('lyric.import_lrc_title'),
+            filters: [
+                {
+                    name: t('lyric.lrc_file'),
+                    extensions: ['lrc', 'LRC', 'txt'],
+                },
+            ],
+            properties: ['openFile'],
+        });
+
+        if (result.canceled || result.filePaths.length === 0) return;
+
+        const filePath = result.filePaths[0];
+        try {
+            const content = await fsUtil.readFile(filePath, { encoding: 'utf-8' });
+            if (!content || !content.trim()) {
+                showToast(t('lyric.import_empty'), { type: 'warn' });
+                return;
+            }
+
+            // 尝试解析以验证是否为有效 lrc
+            const testParser = new LyricParser(content, { musicItem });
+            if (testParser.getLyricItems().length === 0 && !content.includes('[')) {
+                showToast(t('lyric.import_invalid'), { type: 'warn' });
+                return;
+            }
+
+            // 写入 mediaMeta
+            await mediaMeta.setMeta(musicItem.platform, String(musicItem.id), {
+                associatedLyric: {
+                    musicItem,
+                    rawLrc: content,
+                    translation: undefined,
+                },
+            });
+
+            await trackPlayer.refreshLyric();
+            showToast(t('lyric.import_success'));
+            onClose();
+        } catch {
+            showToast(t('lyric.import_failed'), { type: 'warn' });
+        }
+    }, [lyricState, onClose]);
+
     /** 取消关联歌词 */
     const handleUnlinkLyric = useCallback(async () => {
         if (!currentMusic) return;
@@ -244,6 +295,15 @@ export default memo(function LyricSettingsPopover({
             {/* 更多操作 */}
             <div className="l-fullscreen-player__settings-section">
                 <div className="l-fullscreen-player__settings-label">{t('lyric.more_actions')}</div>
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={<FileUp size={14} />}
+                    className="l-fullscreen-player__settings-action"
+                    onClick={handleImportLrc}
+                >
+                    {t('lyric.import_lrc')}
+                </Button>
                 <Button
                     variant="secondary"
                     size="sm"

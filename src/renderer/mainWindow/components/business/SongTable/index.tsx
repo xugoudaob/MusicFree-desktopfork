@@ -24,6 +24,7 @@ import { tinykeys } from 'tinykeys';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@common/cn';
 import { RequestStatus } from '@common/constant';
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { useCurrentMusic } from '../../../core/trackPlayer/hooks';
 import { ListFooter } from '../../ui/ListFooter';
 import { StatusPlaceholder } from '../../ui/StatusPlaceholder';
@@ -39,6 +40,12 @@ import trackPlayer from '../../../core/trackPlayer';
 
 /** 可通过 hideColumns 隐藏的列 key */
 export type HideableColumn = 'index' | 'artist' | 'album' | 'platform' | 'duration';
+
+/** 排序列及方向 */
+interface SortState {
+    columnId: string;
+    direction: 'asc' | 'desc';
+}
 
 /** 行交互事件的上下文信息 */
 export interface RowInteractionDetail {
@@ -83,6 +90,8 @@ export interface SongTableProps {
     // ── 拖拽排序 ──
     /** 是否启用拖拽排序（整行可拖） @default false */
     enableDragSort?: boolean;
+    /** 是否启用表头点击排序（标题/歌手/专辑列可点击排序） @default false */
+    enableSort?: boolean;
     /**
      * 拖拽完成回调 — 支持多选批量拖拽。
      *
@@ -298,6 +307,7 @@ export function SongTable({
     onSelectionChange,
     enableDragSort = false,
     onDragSortEnd,
+    enableSort = false,
     doubleClickBehavior,
     onRowClick: externalOnRowClick,
     onRowDoubleClick: externalOnRowDoubleClick,
@@ -313,6 +323,7 @@ export function SongTable({
     const { t } = useTranslation();
     const currentMusic = useCurrentMusic();
     const [containerEl, setContainerEl] = useState<HTMLDivElement | null>(null);
+    const [sortState, setSortState] = useState<SortState | null>(null);
     const virtuosoRef = useRef<TableVirtuosoHandle>(null);
 
     const scrollParent = useMemo(() => {
@@ -359,6 +370,8 @@ export function SongTable({
     const statusColumnRef = useRef(statusColumn);
     statusColumnRef.current = statusColumn;
     const hasStatusColumn = !!statusColumn;
+    const originalDataRef = useRef(data);
+    originalDataRef.current = data;
 
     // ── 多选拖拽状态 ──
     const [activeDragId, setActiveDragId] = useState<string | null>(null);
@@ -371,6 +384,44 @@ export function SongTable({
     // 行 DOM 被销毁重建后浏览器无法在同一元素上触发 dblclick。
     const hideColumnsKey = (hideColumns ?? []).join(',');
     const hideSet = useMemo(() => new Set(hideColumns ?? []), [hideColumnsKey]);
+
+    // ── 排序比较函数 ──
+    const getSortValue = useCallback(
+        (item: IMusic.IMusicItemBase, colId: string): string | number => {
+            switch (colId) {
+                case 'title':
+                    return item.title ?? '';
+                case 'artist':
+                    return item.artist ?? '';
+                case 'album':
+                    return item.album ?? '';
+                case 'duration':
+                    return item.duration ?? 0;
+                case 'platform':
+                    return item.platform ?? '';
+                default:
+                    return '';
+            }
+        },
+        [],
+    );
+
+    // ── 排序后的数据 ──
+    const sortedData = useMemo(() => {
+        if (!enableSort || !sortState) return data;
+        const { columnId, direction } = sortState;
+        return [...data].sort((a, b) => {
+            const va = getSortValue(a, columnId);
+            const vb = getSortValue(b, columnId);
+            if (typeof va === 'number' && typeof vb === 'number') {
+                return direction === 'asc' ? va - vb : vb - va;
+            }
+            const sa = String(va).toLowerCase();
+            const sb = String(vb).toLowerCase();
+            const cmp = sa.localeCompare(sb, undefined, { numeric: true });
+            return direction === 'asc' ? cmp : -cmp;
+        });
+    }, [data, enableSort, sortState, getSortValue]);
 
     const columns = useMemo<InternalColumn[]>(() => {
         const cols: InternalColumn[] = [];
@@ -625,6 +676,20 @@ export function SongTable({
     }, [onLoadMore]);
 
     // ── Virtuoso: 表头 ──
+    // ── 表头点击排序处理 ──
+    const handleHeaderClick = useCallback(
+        (colId: string) => {
+            if (!enableSort) return;
+            setSortState((prev) => {
+                if (prev?.columnId === colId) {
+                    return { columnId, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+                }
+                return { columnId, direction: 'asc' };
+            });
+        },
+        [enableSort],
+    );
+
     const fixedHeaderContent = useCallback(
         () => (
             <tr className="song-table__header-row">
@@ -633,20 +698,54 @@ export function SongTable({
                         {statusColumnHeader}
                     </th>
                 )}
-                {columns.map((col) => (
-                    <th
-                        key={col.id}
-                        className={cn(
-                            'song-table__header-cell',
-                            col.align && `song-table__header-cell--${col.align}`,
-                        )}
-                    >
-                        {col.header}
-                    </th>
-                ))}
+                {columns.map((col) => {
+                    const isSortable = enableSort && col.id !== 'index' && col.id !== 'duration';
+                    const isActiveSort = sortState?.columnId === col.id;
+                    return (
+                        <th
+                            key={col.id}
+                            className={cn(
+                                'song-table__header-cell',
+                                col.align && `song-table__header-cell--${col.align}`,
+                                isSortable && 'song-table__header-cell--sortable',
+                                isActiveSort && 'song-table__header-cell--sort-active',
+                            )}
+                            onClick={isSortable ? () => handleHeaderClick(col.id) : undefined}
+                            role={isSortable ? 'button' : undefined}
+                            tabIndex={isSortable ? 0 : undefined}
+                            onKeyDown={
+                                isSortable
+                                    ? (e: React.KeyboardEvent) => {
+                                          if (e.key === 'Enter' || e.key === ' ') {
+                                              e.preventDefault();
+                                              handleHeaderClick(col.id);
+                                          }
+                                      }
+                                    : undefined
+                            }
+                        >
+                            <span className="song-table__header-label">
+                                {col.header}
+                                {isSortable && (
+                                    <span className="song-table__header-sort-icon">
+                                        {isActiveSort ? (
+                                            sortState!.direction === 'asc' ? (
+                                                <ArrowUp size={14} />
+                                            ) : (
+                                                <ArrowDown size={14} />
+                                            )
+                                        ) : (
+                                            <ArrowUpDown size={14} />
+                                        )}
+                                    </span>
+                                )}
+                            </span>
+                        </th>
+                    );
+                })}
             </tr>
         ),
-        [columns, hasStatusColumn, statusColumnHeader],
+        [columns, hasStatusColumn, statusColumnHeader, enableSort, sortState, handleHeaderClick],
     );
 
     // ── Virtuoso: 单元格内容 ──
@@ -822,7 +921,7 @@ export function SongTable({
         >
             <TableVirtuoso
                 ref={virtuosoRef}
-                data={data}
+                data={enableSort ? sortedData : data}
                 customScrollParent={scrollParent}
                 useWindowScroll={!scrollParent}
                 fixedHeaderContent={fixedHeaderContent}

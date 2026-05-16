@@ -29,9 +29,13 @@ import fs from 'fs';
 import path from 'path';
 
 // ─── Phase 0: Windows SMTC 绑定 ───
-// 设置 AppUserModelId 以便系统媒体控件（SMTC）可以识别并正确绑定
+// 设置 AppUserModelId（与 forge.config 的 appBundleId 保持一致），
+// 以便 Windows 系统媒体控件（SMTC）可以正确识别应用并显示应用名，
+// 而非「未知应用」。
+// 注意：打包后需确保开始菜单中有对应 AppUserModelId 的 shortcut，
+// 否则 SMTC 仍可能显示为「未知应用」。
 if (process.platform === 'win32') {
-    app.setAppUserModelId('MusicFree');
+    app.setAppUserModelId('fun.upup.musicfree');
 }
 
 // ─── Phase 0: Portable 模式检测（仅 Windows） ───
@@ -201,8 +205,12 @@ app.on('window-all-closed', () => {
     }
 });
 
-/** 执行清理后退出，不通过 will-quit 事件绕圈 */
-async function cleanupAndQuit(): Promise<void> {
+let isCleaningUp = false;
+const willQuitHandler = async (event: Electron.Event) => {
+    if (isCleaningUp) return;
+    event.preventDefault();
+    isCleaningUp = true;
+
     try {
         appTray.dispose();
         musicSheet.dispose();
@@ -215,14 +223,12 @@ async function cleanupAndQuit(): Promise<void> {
     } catch {
         // 清理失败也继续退出
     }
-    // 移除了 will-quit 监听后直接退出，不再触发清理
-    app.removeAllListeners('will-quit');
-    app.quit();
-}
 
-app.on('will-quit', async () => {
-    await cleanupAndQuit();
-});
+    // 清理完后移除自身，再次触发 quit 走正常退出流程
+    app.removeListener('will-quit', willQuitHandler);
+    app.quit();
+};
+app.on('will-quit', willQuitHandler);
 
 app.on('activate', () => {
     // On OS X it's common to re-create a window in the app when the

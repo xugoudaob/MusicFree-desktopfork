@@ -367,7 +367,11 @@ class AppTray {
             label: i18n.t('settings.title'),
             click: () => {
                 this.windowManager.showWindow('main');
-                appSync.sendCommand('navigate', 'setting');
+                // 延迟导航：从最小化恢复后 GPU compositor 需要时间重建，
+                // 立即导航可能因 compositor surface 就绪前渲染请求导致白屏。
+                setImmediate(() => {
+                    appSync.sendCommand('navigate', 'setting');
+                });
             },
         });
 

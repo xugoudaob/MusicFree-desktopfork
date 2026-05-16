@@ -362,6 +362,7 @@ class WindowManager implements IWindowManager {
                 webSecurity: false,
                 sandbox: false,
                 webviewTag: true,
+                backgroundThrottling: false,
             },
             frame: false,
             icon: nativeImage.createFromPath(getLogoPath()),
@@ -422,18 +423,12 @@ class WindowManager implements IWindowManager {
         app.on('before-quit', beforeQuitHandler);
 
         // 关闭行为: 最小化到托盘（仅非主动退出时生效）
+        // 参考 xugoudaob fork #412: Windows 上 minimize 后再 hide() 会导致 Chromium GPU
+        // compositor surface 被释放，restore() 时窗口框正常但渲染空白。
+        // 改用 minimize() + setSkipTaskbar(true)，让窗口保持最小化状态。
         mainWindow.on('close', (e) => {
             if (!isQuitting && appConfig.getConfigByKey('normal.closeBehavior') === 'minimize') {
                 e.preventDefault();
-                
-
-                // https://github.com/maotoumao/MusicFreeDesktop/issues/412
-                // [Windows] 不用 hide() —— 在 Windows 上 hide() 一个 minimized 窗口会
-                // 让 Chromium GPU compositor surface 被释放，restore() 时无法重建，
-                // 表现为窗口框正常但内容空白（典型路径：最小化 → 缩略图 X → 托盘恢复）。
-                // 改为 minimize()+setSkipTaskbar(true)，让窗口始终停留在 minimized
-                // 状态，restore() 能正确从 minimized 恢复。
-                // 上游终于改的代码
                 if (process.platform === 'win32') {
                     if (!mainWindow.isMinimized()) {
                         mainWindow.minimize();
