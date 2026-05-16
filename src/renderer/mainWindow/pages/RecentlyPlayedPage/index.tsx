@@ -124,6 +124,7 @@ export default function RecentlyPlayedPage() {
                             </>
                         )}
                         onRowContextMenu={handleRowContextMenu}
+                        enableSort
                     />
                     <ListFooter status={RequestStatus.Done} />
                 </>

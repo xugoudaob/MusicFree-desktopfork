@@ -150,6 +150,7 @@ export function CompletedTab() {
                     data={filteredList}
                     requestStatus={requestStatus}
                     onRetry={handleRetry}
+                    enableSort
                     statusColumn={(item) => (
                         <>
                             <FavoriteButton musicItem={item} size="sm" />

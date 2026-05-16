@@ -353,7 +353,6 @@ export function SongTable({
 
     // ── 频繁变化值存入 ref，避免 virtuosoComponents 依赖频繁重建 ──
     const dataRef = useRef(data);
-    dataRef.current = data;
     const selectedIdsRef = useRef(selectedIds);
     selectedIdsRef.current = selectedIds;
     const currentMusicRef = useRef(currentMusic);
@@ -422,6 +421,11 @@ export function SongTable({
             return direction === 'asc' ? cmp : -cmp;
         });
     }, [data, enableSort, sortState, getSortValue]);
+
+    // 同步 dataRef：当 enableSort 时指向排序后数据，确保双击播放、右键菜单等
+    // 操作使用的 dataRef.current 与 Virtuoso 渲染的 item 一致，
+    // 避免 playMusicWithReplaceQueue 时队列与 startItem 索引不匹配的问题。
+    dataRef.current = enableSort ? sortedData : data;
 
     const columns = useMemo<InternalColumn[]>(() => {
         const cols: InternalColumn[] = [];
@@ -682,9 +686,12 @@ export function SongTable({
             if (!enableSort) return;
             setSortState((prev) => {
                 if (prev?.columnId === colId) {
-                    return { columnId, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+                    return {
+                        columnId: colId,
+                        direction: prev.direction === 'asc' ? 'desc' : 'asc',
+                    };
                 }
-                return { columnId, direction: 'asc' };
+                return { columnId: colId, direction: 'asc' };
             });
         },
         [enableSort],

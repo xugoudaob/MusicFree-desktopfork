@@ -136,6 +136,7 @@ export default function AlbumPage() {
                 loadMoreStatus={requestStatus}
                 onLoadMore={loadMore}
                 onLoadMoreRetry={retry}
+                enableSort
                 statusColumn={(item) => (
                     <>
                         <FavoriteButton musicItem={item} size="sm" />

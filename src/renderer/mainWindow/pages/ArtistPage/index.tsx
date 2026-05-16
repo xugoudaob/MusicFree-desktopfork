@@ -134,6 +134,7 @@ export default function ArtistPage() {
                                 enableLoadMore={!musicWorks.isEnd && musicWorks.data.length > 0}
                                 loadMoreStatus={musicWorks.requestStatus}
                                 onLoadMore={musicWorks.loadMore}
+                                enableSort
                                 onLoadMoreRetry={musicWorks.retry}
                                 statusColumn={(item) => (
                                     <>

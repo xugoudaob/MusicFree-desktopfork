@@ -165,7 +165,8 @@ export default memo(function LyricSettingsPopover({
 
         const filePath = result.filePaths[0];
         try {
-            const content = await fsUtil.readFile(filePath, { encoding: 'utf-8' });
+            const raw = await fsUtil.readFile(filePath, 'utf-8');
+            const content = typeof raw === 'string' ? raw : raw.toString('utf-8');
             if (!content || !content.trim()) {
                 showToast(t('lyric.import_empty'), { type: 'warn' });
                 return;
