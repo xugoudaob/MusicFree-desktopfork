@@ -41,52 +41,43 @@ function makeWin32WindowFullyDraggable(
 ): void {
     const { height, width, getWindowSize, onDragEnd } = options;
 
-    const initialPos = { x: 0, y: 0, height, width };
+    const initialPos = { x: 0, y: 0, winX: 0, winY: 0, height, width };
     let dragging = false;
     let pastThreshold = false;
     let cachePosition: IPoint | null = null;
 
+    // ── WM_LBUTTONUP：无论是否过阈值，都重置拖动状态 ──
     browserWindow.hookWindowMessage(WM_LBUTTONUP, () => {
+        if (browserWindow.isDestroyed()) return;
+
+        const wasDragging = dragging;
+        const wasPastThreshold = pastThreshold;
+
         dragging = false;
-        draggingSet.delete(browserWindow);
-        if (pastThreshold && cachePosition !== null) {
+        pastThreshold = false;
+        if (wasPastThreshold && cachePosition !== null) {
             onDragEnd?.(cachePosition);
         }
-        pastThreshold = false;
         cachePosition = null;
+
+        // 只有确实在拖动状态才从集合中移除
+        if (wasDragging) {
+            draggingSet.delete(browserWindow);
+        }
     });
 
-    browserWindow.hookWindowMessage(WM_MOUSEMOVE, (wParam: Buffer, lParam: Buffer) => {
-        if (browserWindow.isDestroyed()) {
-            return;
-        }
+    // ── WM_MOUSEMOVE：用 screen.getCursorScreenPoint() 统一用屏幕坐标计算 ──
+    browserWindow.hookWindowMessage(WM_MOUSEMOVE, (wParam: Buffer) => {
+        if (browserWindow.isDestroyed()) return;
 
         const wParamNumber = wParam.readInt16LE(0);
-        if (!(wParamNumber & MK_LBUTTON)) {
-            return;
-        }
+        if (!(wParamNumber & MK_LBUTTON)) return;
 
-        const x = lParam.readInt16LE(0);
-        const y = lParam.readInt16LE(2);
-
-        // 透明窗口：WM_MOUSEMOVE 的 lParam 是屏幕坐标而非客户区坐标
-        // 直接使用需要按客户区处理，但在 WS_EX_TRANSPARENT 下偶发偏移
-        // 若检测到坐标明显超出窗口范围，尝试用 IPC 模式兜底
-        const windowBounds = browserWindow.getBounds();
-        const relX = x - windowBounds.x;
-        const relY = y - windowBounds.y;
-        const isInsideWindow =
-            relX >= -DRAG_THRESHOLD &&
-            relX <= windowBounds.width + DRAG_THRESHOLD &&
-            relY >= -DRAG_THRESHOLD &&
-            relY <= windowBounds.height + DRAG_THRESHOLD;
-
-        if (!isInsideWindow) {
-            // 鼠标明显在窗口外：可能是透明窗口导致坐标异常，忽略本轮
-            return;
-        }
+        // 统一使用屏幕绝对坐标，避免透明窗口 lParam 坐标系飘忽的问题
+        const cursorPoint = screen.getCursorScreenPoint();
 
         if (!dragging) {
+            // 初始化拖动会话
             dragging = true;
             pastThreshold = false;
 
@@ -98,32 +89,47 @@ function makeWin32WindowFullyDraggable(
                 initHeight = size.height;
             }
 
-            initialPos.x = x;
-            initialPos.y = y;
-            initialPos.height = initHeight;
+            const [startWinX, startWinY] = browserWindow.getPosition();
+            initialPos.x = cursorPoint.x;
+            initialPos.y = cursorPoint.y;
+            initialPos.winX = startWinX;
+            initialPos.winY = startWinY;
             initialPos.width = initWidth;
+            initialPos.height = initHeight;
             return;
         }
 
-        // 未超过阈值时不移动窗口，避免干扰点击
+        // 未超过阈值时不做移动，避免干扰点击
+        const deltaX = cursorPoint.x - initialPos.x;
+        const deltaY = cursorPoint.y - initialPos.y;
         if (!pastThreshold) {
-            if (Math.abs(x - initialPos.x) + Math.abs(y - initialPos.y) < DRAG_THRESHOLD) {
+            if (Math.abs(deltaX) + Math.abs(deltaY) < DRAG_THRESHOLD) {
                 return;
             }
             pastThreshold = true;
             draggingSet.add(browserWindow);
         }
 
-        cachePosition = {
-            x: x + browserWindow.getPosition()[0] - initialPos.x,
-            y: y + browserWindow.getPosition()[1] - initialPos.y,
-        };
+        // 窗口新位置 = 窗口起始位置 + 鼠标从初始点的位移
+        const newX = initialPos.winX + deltaX;
+        const newY = initialPos.winY + deltaY;
+
+        // 边界保护：防止坐标异常导致窗口飞出屏幕
+        const display = screen.getDisplayNearestPoint(cursorPoint);
+        const displayBounds = display.bounds;
+        const margin = Math.max(displayBounds.width, displayBounds.height);
+        const clampedX = Math.max(displayBounds.x - margin,
+            Math.min(displayBounds.x + displayBounds.width + margin, newX));
+        const clampedY = Math.max(displayBounds.y - margin,
+            Math.min(displayBounds.y + displayBounds.height + margin, newY));
+
+        cachePosition = { x: clampedX, y: clampedY };
 
         browserWindow.setBounds({
-            x: cachePosition.x,
-            y: cachePosition.y,
-            height: initialPos.height,
+            x: clampedX,
+            y: clampedY,
             width: initialPos.width,
+            height: initialPos.height,
         });
     });
 }

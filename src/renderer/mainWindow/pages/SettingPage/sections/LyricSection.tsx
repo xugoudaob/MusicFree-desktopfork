@@ -210,6 +210,24 @@ export function LyricSection() {
                 description={t('settings.lyric.stroke_color_desc')}
                 control={<ColorPicker value={strokeColor ?? '#f5c542'} onChange={setStrokeColor} />}
             />
+            <SettingRow
+                label="重置桌面歌词位置"
+                description="将桌面歌词恢复到屏幕中央"
+                control={
+                    <button
+                        type="button"
+                        className="p-setting__reset-btn"
+                        onClick={() => {
+                            appConfig.setConfig({
+                                'private.lyricWindowPosition': null,
+                                'private.lyricWindowSize': null,
+                            });
+                        }}
+                    >
+                        重置
+                    </button>
+                }
+            />
         </SettingsCard>
     );
 }
