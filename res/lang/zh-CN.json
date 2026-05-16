@@ -168,7 +168,13 @@
         "download_lyric": "下载歌词",
         "more_actions": "更多操作",
         "search_and_replace": "搜索并替换歌词",
-        "source_info": "歌词来自 {{platform}} - {{title}}{{artist}}"
+        "source_info": "歌词来自 {{platform}} - {{title}}{{artist}}",
+        "import_lrc": "导入歌词文件",
+        "import_lrc_title": "选择歌词文件",
+        "import_success": "歌词导入成功",
+        "import_failed": "歌词导入失败",
+        "import_empty": "所选文件为空",
+        "import_invalid": "所选文件不是有效的歌词文件"
     },
     "media": {
         "unknown_title": "未命名",

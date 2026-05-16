@@ -168,7 +168,13 @@
         "download_lyric": "下載歌詞",
         "more_actions": "更多操作",
         "search_and_replace": "搜尋並替換歌詞",
-        "source_info": "歌詞來自 {{platform}} - {{title}}{{artist}}"
+        "source_info": "歌詞來自 {{platform}} - {{title}}{{artist}}",
+        "import_lrc": "導入歌詞文件",
+        "import_lrc_title": "選擇歌詞文件",
+        "import_success": "歌詞導入成功",
+        "import_failed": "歌詞導入失敗",
+        "import_empty": "所選文件為空",
+        "import_invalid": "所選文件不是有效的歌詞文件"
     },
     "media": {
         "unknown_title": "無標題",

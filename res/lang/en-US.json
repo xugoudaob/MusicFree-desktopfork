@@ -168,7 +168,13 @@
         "download_lyric": "Download Lyrics",
         "more_actions": "More Actions",
         "search_and_replace": "Search & Replace Lyrics",
-        "source_info": "Lyrics from {{platform}} - {{title}}{{artist}}"
+        "source_info": "Lyrics from {{platform}} - {{title}}{{artist}}",
+        "import_lrc": "Import LRC File",
+        "import_lrc_title": "Select LRC File",
+        "import_success": "Lyrics imported successfully",
+        "import_failed": "Failed to import lyrics",
+        "import_empty": "Selected file is empty",
+        "import_invalid": "Selected file is not a valid lyric file"
     },
     "media": {
         "unknown_title": "Untitled",
