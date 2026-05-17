@@ -1,7 +1,7 @@
 {
     "name": "musicfree-desktop",
     "productName": "MusicFree",
-    "version": "1.0.0-beta.4-mod",
+    "version": "1.0.0-beta.4-mod0",
     "description": "一个插件化的音乐播放器",
     "main": ".webpack/main",
     "private": true,
@@ -166,6 +166,6 @@
     "build": {
         "electronDownload": {
             "mirror": "https://npmmirror.com/mirrors/electron/"
+        }
     }
-  }
 }
