@@ -35,7 +35,10 @@ import path from 'path';
 // 注意：打包后需确保开始菜单中有对应 AppUserModelId 的 shortcut，
 // 否则 SMTC 仍可能显示为「未知应用」。
 if (process.platform === 'win32') {
-    app.setAppUserModelId('fun.upup.musicfree');
+    // app.setAppUserModelId 在 ready 后调用以保证 Electron 40+ 兼容性
+    app.whenReady().then(() => {
+        app.setAppUserModelId('fun.upup.musicfree');
+    });
 }
 
 // ─── Phase 0: Portable 模式检测（仅 Windows） ───

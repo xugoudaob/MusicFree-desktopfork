@@ -12,14 +12,6 @@
 #define MyAppId
 #endif
 
-[Registry]
-
-; 注册 AppUserModelID 以便 SMTC 正确识别应用
-
-Root: HKCU; Subkey: "Software\Classes\AppUserModelId\fun.upup.musicfree"; ValueType: string; ValueName: "DisplayName"; ValueData: "MusicFree"; Flags: uninsdeletekey
-
-Root: HKCU; Subkey: "Software\Classes\AppUserModelId\fun.upup.musicfree"; ValueType: string; ValueName: "IconBackgroundColor"; ValueData: "transparent"
-
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
@@ -83,6 +75,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "..\out\MusicFree-win32-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\out\MusicFree-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.js.map"
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+
+[Registry]
+; 注册 AppUserModelID 以便 Windows SMTC 正确识别应用名
+Root: HKCU; Subkey: "Software\Classes\AppUserModelId\fun.upup.musicfree"; ValueType: string; ValueName: "DisplayName"; ValueData: "MusicFree"; Flags: uninsdeletekey
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

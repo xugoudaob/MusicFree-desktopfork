@@ -88,7 +88,7 @@ class WebAudioController extends EventEmitter<IAudioControllerEvents> implements
         this.setPlayerState(PlayerState.None);
         this.audio.src = '';
         this.audio.removeAttribute('src');
-        navigator.mediaSession.playbackState = 'none';
+        navigator.mediaSession.playbackState = 'paused';
     }
 
     setTrackSource(source: IPlugin.IMediaSourceResult, musicItem: IMusic.IMusicItem): void {

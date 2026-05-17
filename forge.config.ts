@@ -24,6 +24,11 @@ const config: ForgeConfig = {
         icon: path.resolve(__dirname, 'res/logo'),
         executableName: 'MusicFree',
         extraResource: [path.resolve(__dirname, 'res')],
+        win32metadata: {
+            FileDescription: 'MusicFree',
+            ProductName: 'MusicFree',
+            CompanyName: 'maotoumao',
+        },
         protocols: [
             {
                 name: 'MusicFree',

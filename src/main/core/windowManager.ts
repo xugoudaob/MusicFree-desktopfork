@@ -353,6 +353,7 @@ class WindowManager implements IWindowManager {
         const mainWindow = new BrowserWindow({
             height: initSize?.height ?? 860,
             width: initSize?.width ?? 1290,
+            title: 'MusicFree',
             minHeight: 760,
             minWidth: 1080,
             webPreferences: {
