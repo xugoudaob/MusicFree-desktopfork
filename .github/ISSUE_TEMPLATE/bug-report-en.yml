@@ -23,10 +23,10 @@ body:
       id: version
       attributes:
           label: App Version
-          description: You can find the version number on the Settings page
+          description: You can find the version number on the Settings page (Option)
           placeholder: 'e.g. 0.5.0'
       validations:
-          required: true
+          required: false
 
     - type: dropdown
       id: os
