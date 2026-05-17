@@ -566,7 +566,12 @@
         "scan_folder_child_overlap": "This path is already included in \"{{parent}}\"",
         "scan_folder_parent_overlap": "This path overlaps with existing folder \"{{child}}\"",
         "scan_failed": "Scan failed, please try again",
-        "filter_short_audio": "Filter audio shorter than 1 minute"
+        "filter_short_audio": "Filter audio shorter than 1 minute",
+        "remove_from_library": "Remove from local library",
+        "confirm_remove_from_library_title": "Remove from local library",
+        "confirm_remove_from_library_message": "Remove from local library? The file will not be deleted.",
+        "confirm_remove_from_library_batch_message": "Remove {{count}} songs from local library? Files will not be deleted.",
+        "removed_from_library": "Removed from local library"
     },
     "quality": {
         "switch": "Change Quality",

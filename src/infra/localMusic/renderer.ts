@@ -19,6 +19,7 @@ interface IMod {
     syncScanFolders(folderPaths: string[]): Promise<IScanResult>;
 
     deleteItems(musicBases: IMedia.IMediaBase[]): Promise<void>;
+    removeLibraryItems(musicBases: IMedia.IMediaBase[]): Promise<void>;
 
     onLibraryChanged(cb: () => void): () => void;
     onScanProgress(cb: (progress: IScanProgress) => void): () => void;
@@ -44,8 +45,20 @@ class LocalMusicRenderer {
      * 将本地歌曲文件移至回收站并删除 local_music DB 记录。
      * 仅处理 platform === LOCAL_PLUGIN_NAME 的项。
      */
+    /**
+     * 将本地歌曲文件移至回收站并删除 local_music DB 记录。
+     * 仅处理 platform === LOCAL_PLUGIN_NAME 的项。
+     */
     public deleteItems(musicBases: IMedia.IMediaBase[]): Promise<void> {
         return mod.deleteItems(musicBases);
+    }
+
+    /**
+     * 仅从本地库移除（删除 local_music DB 记录），不移动文件。
+     * 用于"从本地列表移除"功能，保留原始文件。
+     */
+    public removeLibraryItems(musicBases: IMedia.IMediaBase[]): Promise<void> {
+        return mod.removeLibraryItems(musicBases);
     }
 
     // ─── 事件 ───

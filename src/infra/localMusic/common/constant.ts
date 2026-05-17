@@ -13,8 +13,11 @@ export const IPC = {
     // ─── 获取全量歌曲列表 ───
     GET_ALL_MUSIC_ITEMS: '@infra/local-music/get-all-music-items',
 
-    // ─── 删除 ───
+    // ─── 删除（删文件 + 删记录） ───
     DELETE_ITEMS: '@infra/local-music/delete-items',
+
+    // ─── 仅从本地库移除（删记录、不删文件） ───
+    REMOVE_LIBRARY_ITEMS: '@infra/local-music/remove-library-items',
 
     // ─── 广播 ───
     SCAN_PROGRESS: '@infra/local-music/scan-progress',

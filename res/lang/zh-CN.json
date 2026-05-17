@@ -566,7 +566,12 @@
         "scan_folder_child_overlap": "该路径已被包含在「{{parent}}」中",
         "scan_folder_parent_overlap": "该路径与已有文件夹「{{child}}」存在包含关系",
         "scan_failed": "扫描失败，请重试",
-        "filter_short_audio": "过滤时长小于 1 分钟的音频"
+        "filter_short_audio": "过滤时长小于 1 分钟的音频",
+        "remove_from_library": "从本地列表移除",
+        "confirm_remove_from_library_title": "从本地列表移除",
+        "confirm_remove_from_library_message": "确定要从本地列表移除吗？文件不会被删除。",
+        "confirm_remove_from_library_batch_message": "确定要从本地列表移除 {{count}} 首歌吗？文件不会被删除。",
+        "removed_from_library": "已从本地列表移除"
     },
     "quality": {
         "switch": "切换音质",

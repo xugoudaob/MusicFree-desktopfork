@@ -18,9 +18,13 @@ const mod = {
     syncScanFolders: (folderPaths: string[]) =>
         ipcRenderer.invoke(IPC.SYNC_SCAN_FOLDERS, folderPaths),
 
-    // ─── 删除 ───
+    // ─── 删除（删文件 + 删记录） ───
     deleteItems: (musicBases: IMedia.IMediaBase[]): Promise<void> =>
         ipcRenderer.invoke(IPC.DELETE_ITEMS, musicBases),
+
+    // ─── 仅从本地库移除（删记录、不删文件） ───
+    removeLibraryItems: (musicBases: IMedia.IMediaBase[]): Promise<void> =>
+        ipcRenderer.invoke(IPC.REMOVE_LIBRARY_ITEMS, musicBases),
 
     // ─── 事件监听 ───
     onLibraryChanged: (cb: () => void): (() => void) => {

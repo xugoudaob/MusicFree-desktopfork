@@ -286,6 +286,21 @@ class LocalMusicManager {
                 this.broadcastLibraryChanged();
             },
         );
+
+        ipcMain.handle(
+            IPC.REMOVE_LIBRARY_ITEMS,
+            async (_evt, musicBases: IMedia.IMediaBase[]): Promise<void> => {
+                // 仅删除 DB 记录，不移文件
+                const db = this.db.getDatabase();
+                db.transaction(() => {
+                    for (const base of musicBases) {
+                        this.queries.deleteLocalMusicByKey.run(base.platform, String(base.id));
+                    }
+                })();
+
+                this.broadcastLibraryChanged();
+            },
+        );
     }
 
     // ─── 扫描队列 ───

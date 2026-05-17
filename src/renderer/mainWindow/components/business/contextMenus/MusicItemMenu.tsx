@@ -36,6 +36,11 @@ export interface MusicItemMenuContext {
      *   - 其他 → 用户歌单，显示"从歌单内删除"
      */
     sheetId?: string;
+    /**
+     * 额外的右键菜单项，追加在分隔线之后、下载项之前。
+     * 用于页面自定义操作（如"从本地列表移除"）。
+     */
+    extraEntries?: ContextMenuEntry[];
 }
 
 /** 复制文本到剪贴板并弹出 toast */
@@ -308,6 +313,12 @@ export function MusicItemMenu(ctx: MusicItemMenuContext): ContextMenuEntry[] {
                 },
             });
         }
+    }
+
+    // ── 页面自定义额外菜单项 ──
+    if (ctx.extraEntries && ctx.extraEntries.length > 0) {
+        entries.push({ type: 'separator' });
+        entries.push(...ctx.extraEntries);
     }
 
     return entries;

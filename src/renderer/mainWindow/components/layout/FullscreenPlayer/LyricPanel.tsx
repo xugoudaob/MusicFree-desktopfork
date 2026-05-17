@@ -25,7 +25,7 @@ const INACTIVE_BASE_SIZE = 22;
 
 /** 拖拽判定阈值 (px)，移动距离超过此值视为拖拽而非点击 */
 const DRAG_THRESHOLD = 5;
-/** 用户拖拽后暂停自动滚动的时长 (ms) */
+/** 用户拖拽或滚轮滚动后暂停自动滚动的时长 (ms) */
 const USER_SCROLL_PAUSE = 4000;
 
 /** 检测用户是否偏好减少动画 */
@@ -67,6 +67,19 @@ const LyricPanel = memo(function LyricPanel({ fontScale, showTranslation }: Lyri
         }
         userScrollPauseTimer.current = setTimeout(() => {
             isUserScrolling.current = false;
+            // 复位时强制滚动到当前活跃行（即使 activeIndex 没变化）
+            const container = containerRef.current;
+            if (!container) return;
+            const idx = activeIndexRef.current;
+            if (idx < 0) return;
+            const activeEl = container.querySelector<HTMLElement>(`[data-lyric-index="${idx}"]`);
+            if (!activeEl) return;
+            const scrollTop =
+                activeEl.offsetTop - container.offsetHeight / 2 + activeEl.offsetHeight / 2;
+            container.scrollTo({
+                top: scrollTop,
+                behavior: 'smooth',
+            });
         }, USER_SCROLL_PAUSE);
     }, []);
 
@@ -166,14 +179,38 @@ const LyricPanel = memo(function LyricPanel({ fontScale, showTranslation }: Lyri
         trackPlayer.seekTo(item.time);
     }, []);
 
-    // 清理定时器
+    // ── 滚轮事件：用户滚轮停止后暂停自动滚动，与拖拽共享同一个复位时间 ──
+    // 每次 wheel 事件清除上次定时器，只有连续滚动停止后才触发 pauseAutoScroll，
+    // 避免快速滚动时不断提前复位计时。
     useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        let wheelEndTimer: ReturnType<typeof setTimeout> | null = null;
+
+        const handleWheel = () => {
+            if (wheelEndTimer) {
+                clearTimeout(wheelEndTimer);
+            }
+            // 用户停止滚动 200ms 后才暂停自动滚动
+            wheelEndTimer = setTimeout(() => {
+                pauseAutoScroll();
+                wheelEndTimer = null;
+            }, 200);
+        };
+
+        container.addEventListener('wheel', handleWheel, { passive: true });
+
         return () => {
+            container.removeEventListener('wheel', handleWheel);
+            if (wheelEndTimer) {
+                clearTimeout(wheelEndTimer);
+            }
             if (userScrollPauseTimer.current) {
                 clearTimeout(userScrollPauseTimer.current);
             }
         };
-    }, []);
+    }, [pauseAutoScroll]);
 
     if (lyricItems.length === 0) {
         return (
