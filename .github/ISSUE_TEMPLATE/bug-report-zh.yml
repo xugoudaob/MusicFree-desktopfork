@@ -23,10 +23,10 @@ body:
       id: version
       attributes:
           label: 软件版本
-          description: 打开设置页面可查看版本号
+          description: 打开设置页面可查看版本号(选填)
           placeholder: '例如：0.5.0'
       validations:
-          required: true
+          required: false
 
     - type: dropdown
       id: os
