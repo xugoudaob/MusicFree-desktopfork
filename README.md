@@ -55,6 +55,28 @@ pnpm start
 # 开发模式（启用 Electron DevTools）
 pnpm run dev
 ```
+
+新：找到了一种全新的Windows打包方式：
+```powershell
+# 克隆仓库
+git clone https://github.com/maotoumao/MusicFreeDesktop.git
+cd MusicFreeDesktop
+
+#若无pnpm可选
+#npm -g install pnpm
+
+# 安装依赖
+pnpm install
+
+# 打包webpack
+pnpm run package
+
+#注：下载打包用文件（https://github.com/jrsoftware/issrc/releases/download/is-7_0_0_2/innosetup-7.0.0-preview-3-x64.exe）并安装
+#并记住你安装的位置,下载（https://raw.githubusercontent.com/jrsoftware/issrc/refs/heads/main/Files/Languages/Unofficial/ChineseSimplified.isl）到 安装的位置/Languages/
+# 打包exe文件（格式是 安装的位置/iscc release/build-windows.iss）
+iscc release/build-windows.iss
+```
+
 ### 常用命令
 
 | 命令 | 说明 |

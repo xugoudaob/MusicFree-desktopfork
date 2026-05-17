@@ -33,12 +33,23 @@ const config: ForgeConfig = {
     },
     rebuildConfig: {},
     makers: [
+        // Squirrel — 支持自动增量更新，安装目录固定为 %LOCALAPPDATA%\MusicFree
         new MakerSquirrel({
             name: 'MusicFree',
             setupExe: 'MusicFreeDesktop-Setup.exe',
         }),
-        // MakerWix 需要系统安装 WiX Toolset，如果没装可换成 Squirrel
-        // new MakerWix({ name: 'MusicFree' }),
+        // WiX Toolset — 支持自定义安装目录，但更新需要手动卸载重装
+        // 注意：需在 Windows 上安装 WiX Toolset：https://wixtoolset.org/
+        new MakerWix({
+            name: 'MusicFree',
+            appUserModelId: 'fun.upup.musicfree',
+            manufacturer: 'maotoumao',
+            description: '一个插件化的音乐播放器',
+            language: 1033,
+            ui: {
+                chooseDirectory: true,
+            },
+        }),
         // 便携版 zip — 解压即用，可以随便放哪
         new MakerZIP({}),
         new MakerDMG({
