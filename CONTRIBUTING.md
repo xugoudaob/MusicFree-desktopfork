@@ -49,16 +49,20 @@ pnpm run dev
 ---
 
 ## 🔄 提交流程 | Contribution Workflow
+
 （我自个儿想交PR再来看看这个吧）
+
 ```
 1. Fork ──→ 2. Branch ──→ 3. Develop ──→ 4. Lint & Test ──→ 5. PR
 ```
 
 ### 详细步骤 | Steps
+
 （真的，一眼AI）
 
 **1. Fork 并克隆 | Fork & Clone**
 (我搞完了)
+
 ```bash
 # Fork 仓库后克隆你的 fork
 git clone https://github.com/<your-username>/MusicFreeDesktop.git

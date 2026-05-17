@@ -5,10 +5,10 @@ import webpack from 'webpack';
 const ForkTsCheckerWebpackPlugin: typeof IForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 export const plugins = [
-  new ForkTsCheckerWebpackPlugin({
-    logger: 'webpack-infrastructure',
-  }),
-  new webpack.DefinePlugin({
-    __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
-  }),
+    new ForkTsCheckerWebpackPlugin({
+        logger: 'webpack-infrastructure',
+    }),
+    new webpack.DefinePlugin({
+        __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
+    }),
 ];

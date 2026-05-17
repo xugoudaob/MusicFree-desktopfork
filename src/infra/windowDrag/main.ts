@@ -118,10 +118,14 @@ function makeWin32WindowFullyDraggable(
         const display = screen.getDisplayNearestPoint(cursorPoint);
         const displayBounds = display.bounds;
         const margin = Math.max(displayBounds.width, displayBounds.height);
-        const clampedX = Math.max(displayBounds.x - margin,
-            Math.min(displayBounds.x + displayBounds.width + margin, newX));
-        const clampedY = Math.max(displayBounds.y - margin,
-            Math.min(displayBounds.y + displayBounds.height + margin, newY));
+        const clampedX = Math.max(
+            displayBounds.x - margin,
+            Math.min(displayBounds.x + displayBounds.width + margin, newX),
+        );
+        const clampedY = Math.max(
+            displayBounds.y - margin,
+            Math.min(displayBounds.y + displayBounds.height + margin, newY),
+        );
 
         cachePosition = { x: clampedX, y: clampedY };
 

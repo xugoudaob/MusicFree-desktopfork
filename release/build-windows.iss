@@ -12,6 +12,13 @@
 #define MyAppId
 #endif
 
+[Registry]
+
+; 注册 AppUserModelID 以便 SMTC 正确识别应用
+
+Root: HKCU; Subkey: "Software\Classes\AppUserModelId\fun.upup.musicfree"; ValueType: string; ValueName: "DisplayName"; ValueData: "MusicFree"; Flags: uninsdeletekey
+
+Root: HKCU; Subkey: "Software\Classes\AppUserModelId\fun.upup.musicfree"; ValueType: string; ValueName: "IconBackgroundColor"; ValueData: "transparent"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -27,7 +34,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
-;PrivilegesRequired=lowest
+PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=..\out
 OutputBaseFilename=MusicFreeSetup
@@ -74,7 +81,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "..\out\MusicFree-win32-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\out\MusicFree-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\out\MusicFree-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.js.map"
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
