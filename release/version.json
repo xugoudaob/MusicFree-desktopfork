@@ -1,7 +1,7 @@
 {
-  "version": "1.0.0-beta.4-mod0",
+  "version": "1.0.0-beta.4-mod1",
   "changeLog": [
-    "对代码进行了一堆修修补补"
+    "彻底修复stmc（存疑），优化一些小bug"
   ],
   "download": [
     ""

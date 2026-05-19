@@ -3,7 +3,7 @@
 
 #define MyAppName "MusicFree"
 #ifndef MyAppVersion
-#define MyAppVersion "1.0.0-beta.4-mod0"
+#define MyAppVersion "1.0.0-beta.4-mod1"
 #endif
 #define MyAppPublisher "maotoumao"
 #define MyAppURL "https://musicfree.catcat.work"
