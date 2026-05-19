@@ -35,10 +35,8 @@ import path from 'path';
 // 注意：打包后需确保开始菜单中有对应 AppUserModelId 的 shortcut，
 // 否则 SMTC 仍可能显示为「未知应用」。
 if (process.platform === 'win32') {
-    // app.setAppUserModelId 在 ready 后调用以保证 Electron 40+ 兼容性
-    app.whenReady().then(() => {
-        app.setAppUserModelId('fun.upup.musicfree');
-    });
+    // 必须在 app ready 之前同步调用！否则发声进程会被识别为未知应用
+    app.setAppUserModelId('fun.upup.musicfree');
 }
 
 // ─── Phase 0: Portable 模式检测（仅 Windows） ───
@@ -229,7 +227,7 @@ const willQuitHandler = async (event: Electron.Event) => {
 
     // 清理完后移除自身，再次触发 quit 走正常退出流程
     app.removeListener('will-quit', willQuitHandler);
-    app.quit();
+    app.exit(0);
 };
 app.on('will-quit', willQuitHandler);
 

@@ -81,8 +81,8 @@ Source: "..\out\MusicFree-win32-x64\*"; DestDir: "{app}"; Flags: ignoreversion r
 Root: HKCU; Subkey: "Software\Classes\AppUserModelId\fun.upup.musicfree"; ValueType: string; ValueName: "DisplayName"; ValueData: "MusicFree"; Flags: uninsdeletekey
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; AppUserModelID: "fun.upup.musicfree"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; AppUserModelID: "fun.upup.musicfree"
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent

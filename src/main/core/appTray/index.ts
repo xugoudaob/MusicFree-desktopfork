@@ -100,8 +100,9 @@ class AppTray {
 
         if (this.nativeTrayMenu) {
             // Native 模式：手动处理右键事件
+            // 看看不加问号有没有什么大问题
             tray.on('right-click', (_event) => {
-                this.nativeTrayMenu!.showAt();
+                this.nativeTrayMenu.showAt();
             });
         }
 
@@ -167,9 +168,16 @@ class AppTray {
     }
 
     /** 释放原生托盘菜单资源 */
+    /** https://github.com/xugoudaob/MusicFree-desktopfork/issues/3
+     *  试着修正一下
+     * */
     public dispose(): void {
         this.nativeTrayMenu?.destroy();
         this.nativeTrayMenu = null;
+        if (this.tray && !this.tray.isDestroyed()) {
+            this.tray.destroy();
+        }
+        this.tray = null;
     }
 
     // ─── 菜单刷新调度 ───
