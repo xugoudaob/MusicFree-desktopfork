@@ -44,7 +44,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/maotoumao/MusicFreeDesktop.git
+git clone https://github.com/xugoudaob/MusicFreeDesktop.git
 cd MusicFreeDesktop
 
 #若无pnpm可选
@@ -64,7 +64,7 @@ pnpm run dev
 
 ```powershell
 # 克隆仓库
-git clone https://github.com/maotoumao/MusicFreeDesktop.git
+git clone https://github.com/xugoudaob/MusicFreeDesktop.git
 cd MusicFreeDesktop
 
 #若无pnpm可选
