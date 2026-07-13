@@ -31,7 +31,7 @@
 ## 原readme以外的另行说明
 
 这里的版本fork的是dev版，使用v1.0.0beta4的源码进行二次创作
-**代码出处**：https://github.com/maotoumao/MusicFree \
+**代码出处**：https://github.com/maotoumao/MusicFree/tree/dev \
 我自己实在是受不了还未更新的版本（从三月等到了五月），自行做了一些更改
 上游版本更新会尽快合并。。。 \
 新版的release由于我还没参悟透Electrion神奇的打包机制，先发**即拆即用**的zip压缩包（我试过直接覆盖替换v1.0.0beta4的文件，结果可行，但不保证**卸载功能**可行） \
