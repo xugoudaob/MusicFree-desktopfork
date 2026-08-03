@@ -23,7 +23,7 @@
 > 本项目基于 [AGPL 3.0](./LICENSE) 协议开源，使用此项目时请遵守开源协议。
 > 此外，希望你在使用代码时已了解以下额外说明：
 >
-> 1. 打包、二（或许是三？）次分发**请保留代码出处**：https://github.com/maotoumao/MusicFree https://github.com/xugoudaob/MusicFree-desktopfork
+> 1. 打包、二（或许是三？）次分发**请保留代码出处**：https://github.com/maotoumao/MusicFreeDesktop https://github.com/xugoudaob/MusicFree-desktopfork
 > 2. 请不要用于商业用途，合法合规使用代码；3.如果开源协议变更，将在上游 Github 仓库更新，不另行通知。
 
 ---
@@ -31,7 +31,7 @@
 ## 原readme以外的另行说明
 
 这里的版本fork的是dev版，使用v1.0.0beta4的源码进行二次创作
-**代码出处**：https://github.com/maotoumao/MusicFree/tree/dev \
+**代码出处**：https://github.com/maotoumao/MusicFreeDesktop/tree/dev \
 我自己实在是受不了还未更新的版本（从三月等到了五月），自行做了一些更改
 上游版本更新会尽快合并。。。（或许吧...） \
 新版的release由于我还没参悟透Electrion神奇的打包机制，先发**即拆即用**的zip压缩包（我试过直接覆盖替换v1.0.0beta4的文件，结果可行，但不保证**卸载功能**可行） \
@@ -44,7 +44,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/xugoudaob/MusicFreeDesktop.git
+git clone https://github.com/xugoudaob/MusicFree-desktopfork.git
 cd MusicFreeDesktop
 
 #若无pnpm可选
@@ -64,7 +64,7 @@ pnpm run dev
 
 ```powershell
 # 克隆仓库
-git clone https://github.com/xugoudaob/MusicFreeDesktop.git
+git clone https://github.com/xugoudaob/MusicFree-desktopfork.git
 cd MusicFreeDesktop
 
 #若无pnpm可选
