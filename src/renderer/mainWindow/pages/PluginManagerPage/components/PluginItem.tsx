@@ -208,12 +208,50 @@ const PluginItemActions = memo(function PluginItemActions({
             const result = await pluginManager.updatePlugin(plugin.hash);
             if (result.success) {
                 showToast(t('plugin.toast_plugin_updated', { plugin: plugin.platform }));
-            } else {
-                showToast(
-                    t('plugin.toast_plugin_already_latest', {
-                        plugin: plugin.platform,
-                    }),
-                );
+                return;
+            }
+            // 原始英文 message 仅进日志，不展示给用户
+            console.error(
+                `[PluginManager] Update failed (${result.code ?? 'UNKNOWN'}):`,
+                result.message,
+            );
+            switch (result.code) {
+                case 'NO_UPDATE':
+                    showToast(
+                        t('plugin.toast_plugin_already_latest', {
+                            plugin: plugin.platform,
+                        }),
+                    );
+                    break;
+                case 'PARSE_FAILED':
+                    showToast(
+                        t('plugin.toast_update_parse_failed', {
+                            plugin: plugin.platform,
+                        }),
+                        { type: 'warn' },
+                    );
+                    break;
+                case 'DOWNLOAD_FAILED':
+                    showToast(
+                        t('plugin.toast_update_download_failed', {
+                            plugin: plugin.platform,
+                        }),
+                        { type: 'warn' },
+                    );
+                    break;
+                case 'NOT_FOUND':
+                case 'NO_SRC_URL':
+                    showToast(
+                        t('plugin.toast_update_not_found', {
+                            plugin: plugin.platform,
+                        }),
+                        { type: 'warn' },
+                    );
+                    break;
+                default:
+                    // WRITE_FAILED / UNKNOWN 及未来新增 code：通用失败文案
+                    showToast(t('plugin.update_failed'), { type: 'warn' });
+                    break;
             }
         } catch {
             showToast(t('plugin.update_failed'), { type: 'warn' });

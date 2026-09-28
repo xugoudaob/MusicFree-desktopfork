@@ -15,6 +15,8 @@ import type {
     IGetMediaSourceResult,
     IPluginCacheData,
     IPluginMetaAll,
+    IPluginUpdateAllResult,
+    IPluginUpdateResult,
 } from '@appTypes/infra/pluginManager';
 import {
     IPC_CALL_PLUGIN_METHOD,
@@ -66,11 +68,11 @@ async function uninstallPlugin(hash: string): Promise<{ success: boolean; messag
     return ipcRenderer.invoke(IPC_UNINSTALL_PLUGIN, hash);
 }
 
-async function updatePlugin(hash: string): Promise<{ success: boolean; message?: string }> {
+async function updatePlugin(hash: string): Promise<IPluginUpdateResult> {
     return ipcRenderer.invoke(IPC_UPDATE_PLUGIN, hash);
 }
 
-async function updateAllPlugins(): Promise<{ updated: number; failed: number }> {
+async function updateAllPlugins(): Promise<IPluginUpdateAllResult> {
     return ipcRenderer.invoke(IPC_UPDATE_ALL_PLUGINS);
 }
 

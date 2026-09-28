@@ -56,3 +56,32 @@ export interface IPluginCacheData {
 
 /** 插件元信息存储结构 */
 export type IPluginMetaAll = Record<string, IPlugin.IPluginMeta>;
+
+/** 插件更新失败原因码（updatePlugin / updateAllPlugins 共享，经 IPC 透传到渲染层） */
+export type PluginUpdateErrorCode =
+    | 'NOT_FOUND'
+    | 'NO_SRC_URL'
+    | 'NO_UPDATE'
+    | 'PARSE_FAILED'
+    | 'DOWNLOAD_FAILED'
+    | 'WRITE_FAILED'
+    | 'UNKNOWN';
+
+/** updatePlugin 返回值。失败时 code 标注原因；message 为英文内部原因，仅用于日志，不直接展示给用户 */
+export interface IPluginUpdateResult {
+    success: boolean;
+    /** 失败原因码 */
+    code?: PluginUpdateErrorCode;
+    /** 英文原始原因（仅用于日志） */
+    message?: string;
+}
+
+/** updateAllPlugins 返回值 */
+export interface IPluginUpdateAllResult {
+    /** 成功更新的插件数 */
+    updated: number;
+    /** 失败的插件数 */
+    failed: number;
+    /** 失败插件 hash → 失败原因码 */
+    failedCodes: Partial<Record<string, PluginUpdateErrorCode>>;
+}

@@ -14,6 +14,8 @@ import type {
     IGetMediaSourceParams,
     IGetMediaSourceResult,
     IPluginMetaAll,
+    IPluginUpdateAllResult,
+    IPluginUpdateResult,
 } from '@appTypes/infra/pluginManager';
 import { CONTEXT_BRIDGE_KEY } from '../common/constant';
 import { sortByPluginOrder } from '../common/sortByOrder';
@@ -25,8 +27,8 @@ interface IMod {
     callPluginMethod(params: ICallPluginMethodParams): Promise<any>;
     installPlugin(urlOrPath: string): Promise<{ success: boolean; message?: string }>;
     uninstallPlugin(hash: string): Promise<{ success: boolean; message?: string }>;
-    updatePlugin(hash: string): Promise<{ success: boolean; message?: string }>;
-    updateAllPlugins(): Promise<{ updated: number; failed: number }>;
+    updatePlugin(hash: string): Promise<IPluginUpdateResult>;
+    updateAllPlugins(): Promise<IPluginUpdateAllResult>;
     getAllPlugins(): Promise<IPlugin.IPluginDelegate[]>;
     setPluginMeta(hash: string, meta: Partial<IPlugin.IPluginMeta>): Promise<void>;
     batchSetPluginMeta(
@@ -116,12 +118,12 @@ async function uninstallPlugin(hash: string): Promise<{ success: boolean; messag
 }
 
 /** 更新插件 */
-async function updatePlugin(hash: string): Promise<{ success: boolean; message?: string }> {
+async function updatePlugin(hash: string): Promise<IPluginUpdateResult> {
     return mod.updatePlugin(hash);
 }
 
 /** 批量更新全部插件 */
-async function updateAllPlugins(): Promise<{ updated: number; failed: number }> {
+async function updateAllPlugins(): Promise<IPluginUpdateAllResult> {
     return mod.updateAllPlugins();
 }
 

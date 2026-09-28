@@ -18,7 +18,12 @@ import { nanoid } from 'nanoid';
 import { compare } from 'compare-versions';
 import axios from 'axios';
 import type { IWindowManager } from '@appTypes/main/windowManager';
-import type { ICallPluginMethodParams, IPluginMetaAll } from '@appTypes/infra/pluginManager';
+import type {
+    ICallPluginMethodParams,
+    IPluginMetaAll,
+    IPluginUpdateAllResult,
+    IPluginUpdateResult,
+} from '@appTypes/infra/pluginManager';
 import {
     IPC_CALL_PLUGIN_METHOD,
     IPC_INSTALL_PLUGIN,
@@ -548,15 +553,19 @@ class PluginManager {
     }
 
     /** 更新单个插件：先下载验证新版本，成功后再替换旧版本 */
-    private async updatePlugin(hash: string): Promise<{ success: boolean; message?: string }> {
+    private async updatePlugin(hash: string): Promise<IPluginUpdateResult> {
         const loaded = this.plugins.get(hash);
         if (!loaded) {
-            return { success: false, message: 'Plugin not found' };
+            return { success: false, code: 'NOT_FOUND', message: 'Plugin not found' };
         }
 
         const srcUrl = loaded.instance.srcUrl;
         if (!srcUrl) {
-            return { success: false, message: 'Plugin has no srcUrl for update' };
+            return {
+                success: false,
+                code: 'NO_SRC_URL',
+                message: 'Plugin has no srcUrl for update',
+            };
         }
 
         try {
@@ -569,7 +578,7 @@ class PluginManager {
             const newHash = computeHash(newCode);
 
             if (!newHash || newHash === hash) {
-                return { success: false, message: 'No update available' };
+                return { success: false, code: 'NO_UPDATE', message: 'No update available' };
             }
 
             const testInstance = executePluginCode(
@@ -580,7 +589,11 @@ class PluginManager {
                 this.buildSandboxOptions(newHash),
             );
             if (!testInstance) {
-                return { success: false, message: 'Failed to parse new plugin version' };
+                return {
+                    success: false,
+                    code: 'PARSE_FAILED',
+                    message: 'Failed to parse new plugin version',
+                };
             }
 
             // 版本比较（如有版本号，可通过配置跳过）
@@ -594,6 +607,7 @@ class PluginManager {
             ) {
                 return {
                     success: false,
+                    code: 'NO_UPDATE',
                     message: `Current ${loaded.instance.version} >= new ${testInstance.version}`,
                 };
             }
@@ -601,7 +615,16 @@ class PluginManager {
             // 新版本验证通过，写入文件
             const fileName = `${nanoid()}.js`;
             const filePath = path.join(this.pluginBasePath, fileName);
-            fs.writeFileSync(filePath, newCode, 'utf-8');
+            try {
+                fs.writeFileSync(filePath, newCode, 'utf-8');
+            } catch (err: any) {
+                console.error('[PluginManager] Failed to write plugin file:', err);
+                return {
+                    success: false,
+                    code: 'WRITE_FAILED',
+                    message: err?.message ?? 'Failed to write plugin file',
+                };
+            }
 
             // 删除旧插件文件（不清除存储和 meta）
             this.removePluginFile(loaded);
@@ -624,14 +647,20 @@ class PluginManager {
             return { success: true };
         } catch (err: any) {
             console.error('[PluginManager] Update failed:', err);
-            return { success: false, message: err?.message ?? 'Unknown error' };
+            return {
+                success: false,
+                // axios 请求异常（网络/超时/HTTP 错误）归为下载失败，其余归为未知错误
+                code: axios.isAxiosError(err) ? 'DOWNLOAD_FAILED' : 'UNKNOWN',
+                message: err?.message ?? 'Unknown error',
+            };
         }
     }
 
     /** 批量更新全部插件 */
-    private async updateAllPlugins(): Promise<{ updated: number; failed: number }> {
+    private async updateAllPlugins(): Promise<IPluginUpdateAllResult> {
         let updated = 0;
         let failed = 0;
+        const failedCodes: IPluginUpdateAllResult['failedCodes'] = {};
 
         // 收集需要更新的插件（有 srcUrl 的非内建插件）
         const updatable: ILoadedPlugin[] = [];
@@ -647,10 +676,11 @@ class PluginManager {
                 updated++;
             } else {
                 failed++;
+                failedCodes[loaded.hash] = result.code ?? 'UNKNOWN';
             }
         }
 
-        return { updated, failed };
+        return { updated, failed, failedCodes };
     }
 
     // ─── 查询 ───
