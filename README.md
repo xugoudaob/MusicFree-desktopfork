@@ -4,16 +4,17 @@
 
 [原版：](https://github.com/maotoumao/MusicFree)https://github.com/maotoumao/MusicFree
 
-![GitHub Repo stars](https://img.shields.io/github/stars/maotoumao/MusicFreeDesktop)
-![GitHub forks](https://img.shields.io/github/forks/maotoumao/MusicFreeDesktop)
-![star](https://gitcode.com/maotoumao/MusicFreeDesktop/star/badge.svg)
+![GitHub Repo stars](https://img.shields.io/github/stars/xugoudaob/MusicFree-Desktopfork)
+![GitHub upstream forks](https://img.shields.io/github/forks/maotoumao/MusicFreeDesktop)
+![star](https://gitcode.com/xugoudaob/MusicFree-Desktopfork/star/badge.svg)
 
-![GitHub License](https://img.shields.io/github/license/maotoumao/MusicFreeDesktop)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/maotoumao/MusicFreeDesktop/total)
+![GitHub License](https://img.shields.io/github/license/xugoudaob/MusicFree-Desktopfork)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/xugoudaob/MusicFree-Desktopfork/total)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/maotoumao/MusicFreeDesktop)
 
 (都是本体的数据)
 <a href="https://trendshift.io/repositories/3961" target="_blank"><img src="https://trendshift.io/api/badge/repositories/3961" alt="maotoumao%2FMusicFreeDesktop | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
 
 ---
 
@@ -34,14 +35,14 @@
 **代码出处**：https://github.com/maotoumao/MusicFreeDesktop/tree/dev \
 我自己实在是受不了还未更新的版本（~~从三月等到了五月~~ ~~从六月到九月~~好了现在到十月了），自行做了一些更改
 上游版本更新会尽快合并。。。（或许吧...） \
-新版的release由于我还没参悟透Electrion神奇的打包机制，先发**即拆即用**的zip压缩包（我试过直接覆盖替换v1.0.0beta4的文件，结果可行，但不保证**卸载功能**可行） \
+新版的release会自带**即拆即用**的zip压缩包（分成windows和linux版，或许mac也可以有压缩包？）（我试过直接覆盖替换v1.0.0beta4的文件，结果可行，但不保证**卸载功能**可行） \
 我自己没带MacOS的设备，故release优先发Windows系统的，至于Linux版可以保证提供x64版zip文件，debian系的随机版本打包deb包，至于其它的等我参悟一下yum的打包和Pacman之类的再说。
 对了，**这个**仓库**绝对不支持**arm64和armhf，具体讲就是arm windows和aarch64 linux甚至啥macos27以上之类的都不做支持
 还有一点，这里的代码几乎不可能会给上游交PR(毕竟与原版相比有了较大变化)
 
 ## 启动项目
 
-**nodejs**(至少大于v22.12.0，老版本linux请自行寻找高版本仓库)安装之后，在根目录下执行：
+**nodejs**(至少大于v22.12.0，老版本linux请自行寻找高版本node仓库)安装之后，在根目录下执行：
 （另：写的是bash代码，实际上nodejs和git安装好了后cmd也能用,mac terminal未知）
 
 ```bash
@@ -243,7 +244,7 @@ fliqlo[源代码](https://github.com/maotoumao/MusicFreeThemePacks/tree/master/f
 
 ## 🔌 插件
 
-MusicFree 的核心能力由插件驱动。插件协议与 [安卓版](https://github.com/maotoumao/MusicFree) 保持兼容，桌面版在此基础上扩展了更多能力。
+MusicFree 的核心能力由插件驱动。插件协议与 [安卓版](https://github.com/maotoumao/MusicFree) 保持兼容。
 
 ### 插件仓库
 
