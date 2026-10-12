@@ -1,9 +1,8 @@
 import type { ForgeConfig } from '@electron-forge/shared-types';
+import { execFileSync } from 'child_process';
 import { MakerDMG } from '@electron-forge/maker-dmg';
 import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerRpm } from '@electron-forge/maker-rpm';
-import { MakerSquirrel } from '@electron-forge/maker-squirrel';
-import { MakerWix } from '@electron-forge/maker-wix';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import { WebpackPlugin } from '@electron-forge/plugin-webpack';
@@ -15,6 +14,9 @@ import { mainConfig } from './config/webpack.main.config';
 import { rendererConfig } from './config/webpack.renderer.config';
 import { preloadConfig } from './config/webpack.preload.config';
 import { ForgeExternalsPlugin } from './config/forge-externals-plugin';
+
+/** Windows 上 process.platform 恒为 'win32'。 */
+const isWindows = process.platform === 'win32';
 
 const config: ForgeConfig = {
     packagerConfig: {
@@ -142,6 +144,31 @@ const config: ForgeConfig = {
             [FuseV1Options.OnlyLoadAppFromAsar]: false,
         }),
     ],
+    hooks: {
+        // Windows 上打完包后，用 Inno Setup 出安装包。
+        // 走 release/build-windows.ps1（cmd 下是 build-windows.bat）：版本号由
+        // 脚本从 package.json 读，再以 /DMyAppVersion= 传给 ISCC，避免落到
+        // build-windows.iss 里 #ifndef 那个写死的兜底值——
+        // 那正是「改了 package.json 却出旧版本号」的根因。
+        // 非 Windows 平台直接跳过，不影响 deb/rpm/dmg。
+        postMake: async (_forgeConfig, makeResults) => {
+            if (!isWindows) {
+                return makeResults;
+            }
+            execFileSync(
+                'powershell',
+                [
+                    '-NoProfile',
+                    '-ExecutionPolicy',
+                    'Bypass',
+                    '-File',
+                    path.resolve(__dirname, 'release/build-windows.ps1'),
+                ],
+                { stdio: 'inherit' },
+            );
+            return makeResults;
+        },
+    },
 };
 
 export default config;
