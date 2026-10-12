@@ -96,7 +96,10 @@ export default function TopBar() {
     const handleFocus = useCallback(() => {
         clearTimeout(blurTimerRef.current);
         setIsSearchFocused(true);
-        setIsPanelOpen(true);
+        const maxHistory = appConfig.getConfigByKey('normal.maxHistoryLength') ?? 30;
+        if (maxHistory > 0) {
+            setIsPanelOpen(true);
+        }
     }, []);
 
     const handleBlur = useCallback(() => {
@@ -179,6 +182,20 @@ export default function TopBar() {
                     onBlur={handleBlur}
                     onKeyDown={handleSearchKeyDown}
                 />
+                {searchValue && (
+                    <button
+                        className="l-topbar__search-clear"
+                        type="button"
+                        title={t('common.clear')}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                            setSearchValue('');
+                            inputRef.current?.focus();
+                        }}
+                    >
+                        <X size={14} strokeWidth={1.5} />
+                    </button>
+                )}
 
                 {/* ── 搜索面板 ── */}
                 {isPanelOpen && (

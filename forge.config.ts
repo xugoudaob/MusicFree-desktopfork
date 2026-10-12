@@ -14,6 +14,7 @@ import path from 'path';
 import { mainConfig } from './config/webpack.main.config';
 import { rendererConfig } from './config/webpack.renderer.config';
 import { preloadConfig } from './config/webpack.preload.config';
+import { ForgeExternalsPlugin } from './config/forge-externals-plugin';
 
 const config: ForgeConfig = {
     packagerConfig: {
@@ -36,7 +37,16 @@ const config: ForgeConfig = {
             },
         ],
     },
-    rebuildConfig: {},
+    // better-sqlite3 自 13.0.0 起改为 N-API（预编译随包发布、跨 ABI 通用），
+    // 但其包内布局（prebuilds/win32-x64.node）不符合 @electron/rebuild 的
+    // prebuildify 识别条件，rebuild 会误判为普通原生模块并调用 node-gyp 源码编译；
+    // Windows 上因此报 “node-gyp failed to rebuild better-sqlite3”。
+    // onlyModules 是白名单，空数组 = 不做任何原生重编；
+    // 本项目其余原生模块（sharp / @parcel/watcher / unrs-resolver 等）
+    // 均为 N-API 平台分包预编译，皆无需重编。
+    rebuildConfig: {
+        onlyModules: [],
+    },
     makers: [
         // Squirrel — 支持自动增量更新，安装目录固定为 %LOCALAPPDATA%\MusicFree
         // new MakerSquirrel({
@@ -113,13 +123,13 @@ const config: ForgeConfig = {
         }),
         // Externals plugin must be after WebpackPlugin so that
         // packagerConfig.ignore is already set as a function
-        {
-            name: '@timfish/forge-externals-plugin',
-            config: {
-                externals: ['sharp', 'better-sqlite3'],
-                includeDeps: true,
-            },
-        },
+        // 用本仓库内的实现替代已停更的 @timfish/forge-externals-plugin：
+        // 原包通过 require.resolve(`<pkg>/package.json`) 定位模块，遇到只导出 "."
+        // 的包（如 sharp 0.35+）会抛 ERR_PACKAGE_PATH_NOT_EXPORTED。
+        new ForgeExternalsPlugin({
+            externals: ['sharp', 'better-sqlite3'],
+            includeDeps: true,
+        }),
         // Fuses are used to enable/disable various Electron functionality
         // at package time, before code signing the application
         new FusesPlugin({

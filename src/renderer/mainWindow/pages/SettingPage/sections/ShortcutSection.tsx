@@ -7,6 +7,10 @@ import { Toggle } from '@renderer/mainWindow/components/ui/Toggle';
 import { useConfigValue } from '@renderer/common/hooks/useConfigValue';
 import appConfig from '@infra/appConfig/renderer';
 import shortCutRenderer from '@infra/shortCut/renderer';
+import {
+    domKeyToElectronKey,
+    toElectronAcceleratorParts,
+} from '@infra/shortCut/common/accelerator';
 import type {
     ShortCutAction,
     IShortCutBinding,
@@ -50,6 +54,12 @@ const KEY_DISPLAY_MAP: Record<string, string> = {
     Control: 'Ctrl',
     Meta: 'Win',
     ' ': 'Space',
+    // 方向键/空格：新配置存 Electron 键名，历史配置存 DOM 键名，两种都认
+    Up: '↑',
+    Down: '↓',
+    Left: '←',
+    Right: '→',
+    Space: 'Space',
     ArrowUp: '↑',
     ArrowDown: '↓',
     ArrowLeft: '←',
@@ -127,7 +137,8 @@ export function ShortcutSection() {
             if (event.shiftKey) keys.push('Shift');
 
             const key = event.key;
-            const normalized = key.length === 1 ? key.toUpperCase() : key;
+            // 存 Electron 认得的键名（ArrowUp→Up、' '→Space）
+            const normalized = domKeyToElectronKey(key);
             if (!['Control', 'Meta', 'Alt', 'Shift'].includes(normalized)) {
                 keys.push(normalized);
             }
@@ -147,7 +158,7 @@ export function ShortcutSection() {
                 if (action === capture.action) continue;
                 const binding = newMap[action];
                 const existing = binding?.[capture.scope];
-                if (existing && existing.join('+') === newAccelerator) {
+                if (existing && toElectronAcceleratorParts(existing).join('+') === newAccelerator) {
                     newMap[action] = { ...binding, [capture.scope]: null };
                 }
             }

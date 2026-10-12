@@ -14,7 +14,14 @@ export const mainConfig: Configuration = {
         requestForwarderWorker: './src/infra/requestForwarder/worker.ts',
     },
     output: {
-        filename: '[name].js',
+        // Forge 8 的 webpack 插件把主进程 bundle 固定命名为 index.cjs
+        // （见 WebpackConfig.js 中的 filename: 'index.cjs'），并要求 package.json
+        // 的 main 指向 .webpack/main/index.cjs。
+        // 这里用 [name].cjs 而非插件默认的固定名：本配置有 index 与
+        // requestForwarderWorker 两个入口，固定名会让两者写同一个文件；
+        // [name].cjs 分别产出 index.cjs 与 requestForwarderWorker.cjs，
+        // 前者正是插件要求的入口名。
+        filename: '[name].cjs',
     },
     // Put your normal webpack config below here
     module: {

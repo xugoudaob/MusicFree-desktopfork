@@ -16,6 +16,8 @@
 import { syncKV, asyncKV } from '@renderer/common/kvStore';
 import { showModal } from '@renderer/mainWindow/components/ui/Modal/modalManager';
 import type { IBackupData, IBackupSheet } from '@appTypes/infra/backup';
+import { DOWNLOADED_SHEET_ID } from '@infra/musicSheet/common/constant';
+import type { IMediaMeta } from '@appTypes/infra/mediaMeta';
 
 // ─── 常量 ───
 
@@ -243,6 +245,17 @@ function sanitizeMusicItem(raw: any): IMusic.IMusicItem | null {
     return item as IMusic.IMusicItem;
 }
 
+function getLegacyDownloadData(item: IMusic.IMusicItem): IMediaMeta['downloadData'] | null {
+    const downloadData = (item as any).$?.downloadData;
+    if (!downloadData?.path || !downloadData?.quality) {
+        return null;
+    }
+    return {
+        path: downloadData.path,
+        quality: downloadData.quality,
+    };
+}
+
 // ─── 执行迁移 ───
 
 /**
@@ -257,6 +270,7 @@ function sanitizeMusicItem(raw: any): IMusic.IMusicItem | null {
 export async function executeMigration(): Promise<MigrationResult> {
     // 延迟导入避免循环依赖
     const { default: backup } = await import('@infra/backup/renderer');
+    const { default: mediaMeta } = await import('@infra/mediaMeta/renderer');
     const { default: musicSheet, playQueueBridge } = await import('@infra/musicSheet/renderer');
     const { default: fsUtil } = await import('@infra/fsUtil/renderer');
 
@@ -268,56 +282,62 @@ export async function executeMigration(): Promise<MigrationResult> {
             return { success: true, sheetsImported: 0, songsImported: 0 };
         }
 
-        const sheets: any[] = await readAllFromStore(musicDB, STORE_SHEETS);
+        const backupSheets: IBackupSheet[] = [];
+        const musicPool = new Map<string, IMusic.IMusicItem>();
+        let totalSongs = 0;
 
-        // 收集所有歌曲引用，去重
-        const allMusicKeys = new Map<string, IDBValidKey>();
-        for (const sheet of sheets) {
-            const musicList: any[] = sheet.musicList ?? [];
-            for (const ref of musicList) {
-                if (ref?.platform != null && ref?.id != null) {
-                    const key = `${ref.platform}@${ref.id}`;
-                    if (!allMusicKeys.has(key)) {
-                        allMusicKeys.set(key, [ref.platform, ref.id]);
+        try {
+            const sheets: any[] = await readAllFromStore(musicDB, STORE_SHEETS);
+
+            // 收集所有歌曲引用，去重
+            const allMusicKeys = new Map<string, IDBValidKey>();
+            for (const sheet of sheets) {
+                const musicList: any[] = sheet.musicList ?? [];
+                for (const ref of musicList) {
+                    if (ref?.platform != null && ref?.id != null) {
+                        const key = `${ref.platform}@${ref.id}`;
+                        if (!allMusicKeys.has(key)) {
+                            allMusicKeys.set(key, [ref.platform, ref.id]);
+                        }
                     }
                 }
             }
-        }
 
-        // 批量拉取完整歌曲数据
-        const musicKeys = Array.from(allMusicKeys.values());
-        const allMusicItems = await bulkGetFromStore<any>(musicDB, STORE_MUSIC, musicKeys);
-        const musicPool = new Map<string, IMusic.IMusicItem>();
-        for (const raw of allMusicItems) {
-            const item = sanitizeMusicItem(raw);
-            if (item) {
-                musicPool.set(`${item.platform}@${item.id}`, item);
-            }
-        }
-
-        // 组装 IBackupSheet[]
-        const backupSheets: IBackupSheet[] = [];
-        let totalSongs = 0;
-
-        for (const sheet of sheets) {
-            const musicList: IMusic.IMusicItem[] = [];
-            for (const ref of sheet.musicList ?? []) {
-                if (ref?.platform == null || ref?.id == null) continue;
-                const item = musicPool.get(`${ref.platform}@${ref.id}`);
+            // 批量拉取完整歌曲数据
+            const musicKeys = Array.from(allMusicKeys.values());
+            const allMusicItems = await bulkGetFromStore<any>(musicDB, STORE_MUSIC, musicKeys);
+            for (const raw of allMusicItems) {
+                const item = sanitizeMusicItem(raw);
                 if (item) {
-                    musicList.push(item);
+                    musicPool.set(`${item.platform}@${item.id}`, item);
                 }
             }
 
-            backupSheets.push({
-                id: sheet.id ?? '',
-                title: sheet.title ?? '',
-                musicList,
-            });
-            totalSongs += musicList.length;
-        }
+            // 组装 IBackupSheet[]
+            for (const sheet of sheets) {
+                const musicList: IMusic.IMusicItem[] = [];
+                for (const ref of sheet.musicList ?? []) {
+                    if (ref?.platform == null || ref?.id == null) continue;
+                    const item = musicPool.get(`${ref.platform}@${ref.id}`);
+                    if (item) {
+                        musicList.push(item);
+                    } else {
+                        console.warn(
+                            `[LegacyMigration] Song not found in pool: ${ref.platform}@${ref.id}`,
+                        );
+                    }
+                }
 
-        musicDB.close();
+                backupSheets.push({
+                    id: sheet.id ?? '',
+                    title: sheet.title ?? '',
+                    musicList,
+                });
+                totalSongs += musicList.length;
+            }
+        } finally {
+            musicDB.close();
+        }
 
         // ── 2. 通过临时文件导入歌单 ──
 
@@ -345,7 +365,36 @@ export async function executeMigration(): Promise<MigrationResult> {
             }
         }
 
-        // ── 3. 迁移星标歌单、播放队列、最近播放 ──
+        // ── 3. 恢复下载信息 ──
+        try {
+            const downloadedItems: Array<{
+                item: IMusic.IMusicItem;
+                downloadData: NonNullable<IMediaMeta['downloadData']>;
+            }> = [];
+            for (const item of musicPool.values()) {
+                const downloadData = getLegacyDownloadData(item);
+                if (downloadData) {
+                    downloadedItems.push({ item, downloadData });
+                }
+            }
+
+            if (downloadedItems.length > 0) {
+                for (const { item, downloadData } of downloadedItems) {
+                    await mediaMeta.setMeta(item.platform, String(item.id), {
+                        downloadData,
+                    });
+                }
+
+                musicSheet.addMusicToSheet(
+                    downloadedItems.map(({ item }) => item),
+                    DOWNLOADED_SHEET_ID,
+                );
+            }
+        } catch (e) {
+            console.error('[LegacyMigration] Failed to restore download data:', e);
+        }
+
+        // ── 4. 迁移星标歌单、播放队列、最近播放 ──
 
         const prefDB = await openLegacyDB(LEGACY_USER_PREF_DB);
         if (prefDB) {

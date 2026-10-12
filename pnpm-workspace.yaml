@@ -8,3 +8,18 @@ allowBuilds:
     unrs-resolver: true
 
 nodeLinker: hoisted
+
+# @electron/rebuild 以 git URL 依赖 @electron/node-gyp（传递依赖，depth>0），
+# pnpm 11 的 blockExoticSubdeps 会拦下它；本项目必须允许，否则 pnpm install 直接失败。
+blockExoticSubdeps: false
+
+overrides:
+    # Electron 44 的 ABI（149）由 node-abi 3.98.0 起才收录。
+    # 旧版（如上游 lock 里的 3.92.0）跑 @electron/rebuild 会报
+    # “Could not detect abi for version 44.7.0 and runtime electron”。
+    node-abi: ^3.98.0
+    # @types/glob@7 以 "*" 范围依赖 @types/minimatch，会解析到 6.0.0——
+    # 那是只有 package.json、没有 index.d.ts 的桩包，TS 自动加载
+    # node_modules/@types/* 时报 TS2688 "Cannot find type definition file
+    # for 'minimatch'"。5.1.2 是最后一个带真类型定义的版本。
+    '@types/minimatch': 5.1.2

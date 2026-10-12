@@ -98,7 +98,7 @@ iscc release/build-windows.iss
 
 > 当前版本支持 Windows 和 Linux，macOS未进行测试
 
-<img src="./src/assets/imgs/wechat_channel1.png" height="144px" title="原作者微信公众号" style="display:inherit;"/>
+![原作者微信图](./src/assets/imgs/wechat_channel1.png)
 
 ## 特性
 

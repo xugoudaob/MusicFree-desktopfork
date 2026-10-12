@@ -20,7 +20,7 @@ import type {
     IShortCutBinding,
     ShortCutAction,
 } from '@appTypes/infra/shortCut';
-import { electronAcceleratorToTinykeys } from './common/accelerator';
+import { electronAcceleratorToTinykeys, toElectronAcceleratorParts } from './common/accelerator';
 import { CONTEXT_BRIDGE_KEY } from './common/constant';
 
 // ─── Preload Bridge ───
@@ -144,7 +144,8 @@ class ShortCutRenderer {
                 continue;
             }
 
-            const accelerator = binding.local.join('+');
+            // 先归一成 Electron 键名再转 tinykeys：新配置存 Electron 键名、历史配置存 DOM 键名，两者都能正确绑定
+            const accelerator = toElectronAcceleratorParts(binding.local).join('+');
             if (!accelerator) {
                 continue;
             }

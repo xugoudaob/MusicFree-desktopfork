@@ -89,6 +89,43 @@ const KEY_MAP: Record<string, string> = {
 };
 
 /**
+ * (上游#445)
+ * DOM 键名 → Electron Accelerator 键名 的反查表。
+ *
+ * 录制时拿到的是 KeyboardEvent.key（`ArrowUp` / `' '`），而 Electron 的 globalShortcut
+ * 只认它自己那张表（`Up` / `Space`）：解析不出 token 时 StringToAccelerator 返回 false，
+ * register() 抛 Invalid accelerator。本地（tinykeys）用的正是 DOM 键名，
+ * 于是同一份配置会表现为「本地能用、全局用不了」。
+ *
+ * 只列两边不一致的键；Backspace / Delete / PageUp / Home / Tab 等两边同名，无需映射。
+ */
+const DOM_KEY_TO_ELECTRON: Record<string, string> = {
+    ArrowUp: 'Up',
+    ArrowDown: 'Down',
+    ArrowLeft: 'Left',
+    ArrowRight: 'Right',
+    ' ': 'Space',
+};
+
+/** 把单个 KeyboardEvent.key 归一成 Electron 认得的键名（先查映射表，单字符才转大写） */
+export function domKeyToElectronKey(key: string): string {
+    // 必须先查映射表：空格（' '）长度也是 1，否则会被当成普通单字符键原样存下
+    const mapped = DOM_KEY_TO_ELECTRON[key];
+    if (mapped) {
+        return mapped;
+    }
+    return key.length === 1 ? key.toUpperCase() : key;
+}
+
+/**
+ * 归一化一组按键部件：把历史配置里存下的 DOM 键名（ArrowUp / ' '）转成 Electron 键名。
+ * 读取旧配置时用，避免用户之前录好的快捷键永远注册不上。
+ */
+export function toElectronAcceleratorParts(parts: string[]): string[] {
+    return parts.map((part) => DOM_KEY_TO_ELECTRON[part] ?? part);
+}
+
+/**
  * 将 Electron Accelerator 格式的快捷键字符串转换为 tinykeys 格式。
  *
  * @param accelerator Electron Accelerator 格式字符串，如 "CmdOrCtrl+Shift+P"

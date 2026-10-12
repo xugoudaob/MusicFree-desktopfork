@@ -17,6 +17,7 @@ import type {
 import type { ICommandSender } from '@appTypes/infra/appSync';
 import type { IWindowManager } from '@appTypes/main/windowManager';
 import { IPC } from './common/constant';
+import { toElectronAcceleratorParts } from './common/accelerator';
 
 class ShortCut {
     private windowManager!: IWindowManager;
@@ -105,7 +106,8 @@ class ShortCut {
                 continue;
             }
 
-            const accelerator = binding.global.join('+');
+            // 归一化：历史配置里存的是 DOM 键名（ArrowUp / ' '），后面 register() 会解析失败
+            const accelerator = toElectronAcceleratorParts(binding.global).join('+');
             if (!accelerator) {
                 continue;
             }
@@ -115,7 +117,12 @@ class ShortCut {
                 registered = globalShortcut.register(accelerator, () => {
                     this.appSync.sendCommand(action);
                 });
-            } catch {
+            } catch (err) {
+                // 不吞错误：全局注册失败原本只表现为 registered=false，根因（如 Invalid accelerator）看不到
+                console.warn(
+                    `[ShortCut] Failed to register global accelerator "${accelerator}" for "${action}":`,
+                    err,
+                );
                 registered = false;
             }
 

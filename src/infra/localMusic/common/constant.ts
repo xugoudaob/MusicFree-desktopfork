@@ -18,6 +18,8 @@ export const IPC = {
 
     // ─── 仅从本地库移除（删记录、不删文件） ───
     REMOVE_LIBRARY_ITEMS: '@infra/local-music/remove-library-items',
+    // ─── 编辑元数据 ───
+    UPDATE_MUSIC_ITEM: '@infra/local-music/update-music-item',
 
     // ─── 广播 ───
     SCAN_PROGRESS: '@infra/local-music/scan-progress',
