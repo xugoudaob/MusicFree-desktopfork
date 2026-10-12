@@ -1,7 +1,7 @@
 {
-  "version": "1.0.0-beta.4-mod1",
+  "version": "1.0.0-beta.4-mod2",
   "changeLog": [
-    "彻底修复stmc（存疑），优化一些小bug"
+    "更新electron至v44.7,更新electron附属包，从上游合并了一些功能"
   ],
   "download": [
     ""
